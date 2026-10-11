@@ -45,6 +45,7 @@ Progress protocol (one line per event, flushed immediately, for log monitoring):
 """
 import argparse
 import json
+import os
 import sys
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -285,6 +286,8 @@ def main():
                     help=f"max concurrent job-screener processes (default: {DEFAULT_WORKERS})")
     ap.add_argument("--worker", choices=core.WORKER_MODES,
                     help=f"worker mode (default: ${core.WORKER_ENV} or {core.DEFAULT_WORKER})")
+    ap.add_argument("--backend", default=os.environ.get("JOB_MATCH_BACKEND", "cli"),
+                    help="cli (Claude Code CLI, default) or api / api:<model> (Messages API, single-turn only)")
     ap.add_argument("--max-budget-usd", type=float,
                     help="stop launching workers once this much would be spent (envelope total_cost_usd)")
     ap.add_argument("--dry-run", action="store_true", help="validate only; no Claude calls")
@@ -307,7 +310,7 @@ def main():
         if args.dry_run:
             core.log(f"worker: {mode} (dry-run)")
         else:
-            run["worker"] = core.Worker(mode, core.find_claude(), args.model, args.max_budget_usd)
+            run["worker"] = core.Worker(mode, core.find_claude() if args.backend == "cli" else None, args.model, args.max_budget_usd, args.backend)
             core.log(run["worker"].describe())
         checkpointed, pending = plan(platforms, args.date, run)
 

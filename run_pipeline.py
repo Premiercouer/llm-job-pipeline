@@ -76,7 +76,7 @@ def discovery(r: Runner, source: str, a: argparse.Namespace) -> None:
     trial = ["--limit-boards", a.limit_boards] if a.limit_boards else []
     stage01 = f"discovery/{source}/scripts/01_search_jobs.py"
     r.run(f"discovery/{source}: scan boards (prepare)", stage01, *trial)
-    screen = ["--source", source] + (["--test"] if a.limit_boards else []) + \
+    screen = ["--source", source, "--backend", a.backend] + (["--test"] if a.limit_boards else []) + \
              (["--model", a.model] if a.model else [])
     summary = last_json_line(r.run(f"discovery/{source}: title screen (worker)", "discovery/title_screen.py",
                                    *screen, capture=True))
@@ -96,6 +96,7 @@ def screening(r: Runner, a: argparse.Namespace) -> None:
     for source in a.sources:
         r.run(f"screening: split {source} into batches", f"screening/split_{source}.py")
     opts = (["--platform", a.sources[0]] if len(a.sources) == 1 else []) + ["--workers", a.workers] + \
+           ["--backend", a.backend] + \
            (["--model", a.model] if a.model else []) + \
            (["--max-budget-usd", a.max_budget_usd] if a.max_budget_usd is not None else [])
     r.run("screening: screen every posting", "screening/scripts/02_run_screening.py", *opts)
@@ -120,6 +121,7 @@ def main() -> int:
     ap.add_argument("--sources", default=",".join(SOURCES), help="comma-separated: greenhouse,ashby")
     ap.add_argument("--limit-boards", type=int, help="discovery trial run on N boards (test paths; stops after discovery)")
     ap.add_argument("--model", help="model for every worker (default: the CLI default)")
+    ap.add_argument("--backend", default="cli", help="discovery + screening model backend: cli (default), api, api:<model>")
     ap.add_argument("--workers", type=int, default=3, help="parallel screening workers")
     ap.add_argument("--max-budget-usd", type=float, help="screening spend cap")
     ap.add_argument("--provider", help="quality-review provider (default: $LJP_SCORER or mock)")

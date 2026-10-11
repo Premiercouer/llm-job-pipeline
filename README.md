@@ -52,7 +52,7 @@ Details and caveats: [Evaluation](#evaluation).
 | Screening | [`screening/`](screening/) | One isolated LLM call per posting, a structured decision with quoted evidence, validation, batch checkpoints, merge and cross-source dedupe |
 | Resume generation | [`resume/`](resume/) | V1 from a fixed bullet / skills library → external quality review → V2 → PDF → automatic trim until it fits one page → queue |
 | Quality review | [`scoring/`](scoring/) | Provider interface plus a crash-safe state machine for any external scoring service (mock and manual providers included) |
-| Shared | [`common/`](common/), [`config/`](config/) | Config and paths, candidate identity, single-turn worker runtime, output guard, pseudonymous telemetry |
+| Shared | [`common/`](common/), [`config/`](config/) | Model-call interface (CLI and API backends), config and paths, candidate identity, single-turn worker runtime, output guard, pseudonymous telemetry |
 | Evaluation | [`eval/`](eval/), [`docs/`](docs/) | Benchmark scripts, benchmark reports, decision records, the architecture diagram |
 | Entry point | [`run_pipeline.py`](run_pipeline.py) | One command for the whole pipeline or a slice of it (`--from` / `--until`) |
 | Demo & tooling | [`demo/`](demo/), [`tools/`](tools/) | Offline end-to-end demo, fake model CLI, test runner, public-safety scan |
@@ -74,8 +74,8 @@ conversation.
 - **Collecting data at scale and classifying it with an LLM**: public-API discovery across ~975 company
   boards, deduplicated incrementally, then semantic screening with a rubric the model must justify.
 - **Engineering for cost, failure and untrusted input**: prompt caching, budget caps, checkpoint and
-  resume, failure classification with a circuit breaker, and layered defences against prompt injection
-  from scraped text.
+  resume, failure classification with a circuit breaker, one model-call interface over the CLI and the
+  Messages API, and layered defences against prompt injection from scraped text.
 
 ## Case study: a design rejected on measurement
 
@@ -154,8 +154,11 @@ four engineers"}`, with no responsibility mapping.
 
 - **Python 3.11+**, standard library only, except [PyMuPDF](https://pymupdf.readthedocs.io/) for PDF page
   checks.
-- **Claude** (Opus) through the [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) in
-  non-interactive mode (`claude -p`), with no tools, a system-prompt file and JSON output.
+- **Claude** (Opus) behind one call interface ([`common/llm.py`](common/llm.py)) with two backends: the
+  [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) in non-interactive mode (`claude -p`,
+  the default), or the Messages API through the official
+  [`anthropic`](https://github.com/anthropics/anthropic-sdk-python) SDK (`--backend api`, optional
+  extra). Both are single-turn: no tools, the rules in the system prompt, JSON out.
 - **Headless Chrome / Chromium** to render resumes from HTML to PDF.
 - **GitHub Actions** for tests, the offline demo and the public-safety scan.
 
@@ -227,6 +230,9 @@ than the real model's judgement (see the [example above](#example-one-screening-
      `03_review_resumes.py` → `04_generate_final.py` → `05_enqueue_applications.py`.
 
    `--limit-boards N` makes a discovery-only trial run on a few boards, using the stages' test paths.
+   `--backend api` (or `api:<model>`) runs the title screen and screening through the Messages API
+   instead of the CLI: `pip install ".[api]"` and set Anthropic credentials (for example
+   `ANTHROPIC_API_KEY`).
 5. Plug in your own review service with `--provider module:factory` (any object implementing the
    `ResumeScorer` protocol in [`scoring/models.py`](scoring/models.py)).
 
@@ -277,7 +283,18 @@ from the journal instead of starting over.
 posting is screened serially first to warm the cache before the parallel pool starts. Per-call cost and
 tokens are recorded, and `--max-budget-usd` reserves an estimate before each launch.
 
-**8. Designs are costed before they ship.** A two-stage gate that passed every quality check was
+**8. One call contract, two runtimes.** [`common/llm.py`](common/llm.py) defines a single model call:
+system prompt and input in, text plus normalized usage out, and exactly three failure classes: *transient* (retry once), *input* (this input can never succeed) and
+*fatal* (stop the run). The CLI backend and the Messages API backend map their own errors onto those
+classes. The title screen uses it for every call, and screening uses it whenever `--backend api` is
+set. In screening, the API path reuses the same prompt hashing, single-turn and cache-context
+guardrails, budget and validation as the CLI path, so a backend comparison measures the model, not
+the harness ([`eval/compare_models.py`](eval/compare_models.py)). Two deliberate choices: the SDK's own
+retries are off, so the pipeline's retry policy is the only one; and server-side refusal fallbacks are
+opt-in, because a run must use a single model, so a declined posting fails on its own instead of being
+answered by another model.
+
+**9. Designs are costed before they ship.** A two-stage gate that passed every quality check was
 rejected because it raised cost by 31%. See the [case study](#case-study-a-design-rejected-on-measurement).
 
 ## Evaluation
@@ -296,11 +313,13 @@ compares against the pipeline's own earlier decisions, not against an independen
 
 ## Testing & CI
 
-- 164 offline tests across discovery, screening, quality review and resume generation, standard
+- 184 offline tests across the model-call layer, discovery, screening, quality review and resume generation, standard
   library `unittest` only: `python3 tools/run_tests.py`.
 - [`tools/fake_claude.py`](tools/fake_claude.py) stands in for the model CLI, so guardrails, retries and
   failure paths are tested without network or spend. One test runs the real hand-off end to end: a
-  stage 01 prepare artifact → the title-screen worker → stage 01 finalize.
+  stage 01 prepare artifact → the title-screen worker → stage 01 finalize. The API backend runs
+  against a fake SDK that mirrors the `anthropic` package's exception classes and responses: request
+  shape, error mapping, refusals, usage and cost, and the screening guardrails on that path.
 - CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs the tests on Python 3.11–3.13, runs the
   offline demo end to end through `run_pipeline.py` and uploads the generated PDFs, and runs a public-safety scan
   ([`tools/check_public_safety.py`](tools/check_public_safety.py)) for secrets, home paths, personal
@@ -325,8 +344,9 @@ compares against the pipeline's own earlier decisions, not against an independen
 
 - Built for one user at personal scale: hundreds of postings a day, not millions. No service, queue or
   database; workers are local CLI processes.
-- Depends on the Claude Code CLI as the model runtime. The worker contract (system prompt in, JSON out)
-  is small, but no other backend is implemented.
+- The Messages API backend covers the title screen and screening; the resume workers still call the
+  CLI directly. The API backend is tested offline against a fake SDK only. No real CLI-vs-API or
+  cross-model comparison has been run yet; `eval/compare_models.py` is ready for one.
 - Evaluation samples are small, and screening quality has not yet been measured against independent
   human labels.
 - One rubric rule is under-specified: whether a hard 1–2 year minimum counts as a required-experience

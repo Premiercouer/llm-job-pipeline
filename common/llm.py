@@ -8,14 +8,22 @@ the same usage fields and the same failure classes whatever runs underneath:
            InputError      (this input can never succeed: prompt too long)
            FatalError      (environment / contract problem: stop the whole run)
 
-ClaudeCliBackend runs `claude -p` single-turn and tool-less: the system prompt goes in a private
-0600 file, the call runs in an empty private cwd with CLAUDE.md discovery and auto-memory off,
-and the CLI's JSON envelope is checked after the fact (one turn, no tool use, no permission
-denials, one model).
+Backends (pick one with make_backend("cli" | "cli:<model>" | "api" | "api:<model>")):
+
+ClaudeCliBackend      `claude -p` single-turn and tool-less: the system prompt goes in a private
+                      0600 file, the call runs in an empty private cwd with CLAUDE.md discovery and
+                      auto-memory off, and the CLI's JSON envelope is checked after the fact (one
+                      turn, no tool use, no permission denials, one model). Cost: the CLI's own
+                      total_cost_usd.
+AnthropicApiBackend   the Messages API through the official `anthropic` SDK (optional dependency):
+                      the system prompt is one cached block (1h TTL), the input is the single user
+                      message, no tools. The SDK's own retries are off so that the pipeline's retry
+                      policy is the only one. Cost: list-price estimate from the usage fields.
 """
 from __future__ import annotations
 
 import hashlib
+import importlib
 import json
 import os
 import re
@@ -212,3 +220,104 @@ class ClaudeCliBackend:
 
     def __exit__(self, *exc):
         self.close()
+
+
+# ----------------------------------------------------------------------- Anthropic API backend
+# USD per million tokens: (input, output, cache read). A 1h cache write costs 2x input.
+PRICES = {
+    "claude-opus-5-5": (4.00, 20.00, 0.20),
+    "claude-sonnet-5-5": (2.00, 10.00, 0.20),
+    "claude-haiku-5-5": (0.10, 0.50, 0.01),
+    "claude-fable-5-1": (10.00, 50.00, 0.25),
+}
+DEFAULT_API_MODEL = "claude-opus-5-5"
+
+
+def list_price_cost(model: str, u: Usage) -> float | None:
+    if model not in PRICES:
+        return None
+    inp, out, read = PRICES[model]
+    return round((u.input_tokens * inp + u.cache_creation_input_tokens * 2 * inp +
+                  u.cache_read_input_tokens * read + u.output_tokens * out) / 1e6, 6)
+
+
+class AnthropicApiBackend:
+    name = "anthropic-api"
+
+    def __init__(self, model: str | None = None, effort: str | None = None, max_tokens: int = 16000,
+                 fallbacks: bool = False, sdk=None, client=None):
+        """`fallbacks` opts into server-side refusal fallbacks. It is off by default: a run must use one
+        model throughout (the screening guardrail stops a run whose model changes), so a declined
+        request should fail that one input instead of being answered by another model."""
+        self.model = model or DEFAULT_API_MODEL
+        self.effort, self.max_tokens, self.fallbacks = effort, max_tokens, fallbacks
+        try:
+            self.sdk = sdk or importlib.import_module("anthropic")
+        except ImportError:
+            raise FatalError('the API backend needs the anthropic SDK: pip install "llm-job-pipeline[api]"') from None
+        self.client = client or self.sdk.Anthropic(max_retries=0)
+
+    def complete(self, system_prompt: str, user_prompt: str, timeout: float) -> Result:
+        sdk = self.sdk
+        params = {"model": self.model, "max_tokens": self.max_tokens,
+                  "system": [{"type": "text", "text": system_prompt,
+                              "cache_control": {"type": "ephemeral", "ttl": "1h"}}],
+                  "messages": [{"role": "user", "content": user_prompt}]}
+        if self.effort:
+            params["output_config"] = {"effort": self.effort}
+        try:
+            api = self.client.with_options(timeout=timeout)
+            if self.fallbacks:
+                msg = api.beta.messages.create(**params, betas=["server-side-fallback-2026-07-01"],
+                                               fallbacks="default")
+            else:
+                msg = api.messages.create(**params)
+        except (sdk.AuthenticationError, sdk.PermissionDeniedError, sdk.NotFoundError) as e:
+            raise FatalError(f"{type(e).__name__}: {getattr(e, 'message', e)}") from None
+        except sdk.BadRequestError as e:
+            message = str(getattr(e, "message", e))
+            if "prompt is too long" in message.lower():
+                raise InputError(message[:200]) from None
+            raise FatalError(f"request rejected: {message[:200]}") from None
+        except (sdk.RateLimitError, sdk.APITimeoutError, sdk.APIConnectionError) as e:
+            raise TransientError(f"{type(e).__name__}: {getattr(e, 'message', e)}") from None
+        except sdk.APIStatusError as e:
+            if e.status_code >= 500:
+                raise TransientError(f"API error {e.status_code}") from None
+            raise FatalError(f"API error {e.status_code}: {getattr(e, 'message', e)}") from None
+
+        if msg.stop_reason == "refusal":
+            category = getattr(getattr(msg, "stop_details", None), "category", None)
+            raise InputError(f"model declined this input (category: {category})")
+        if msg.stop_reason == "max_tokens":
+            raise TransientError(f"output hit max_tokens={self.max_tokens}")
+        if any(b.type == "tool_use" for b in msg.content):
+            raise FatalError("single-turn contract violated: tool use in a tool-less call")
+        u = msg.usage
+        usage = Usage(input_tokens=u.input_tokens or 0,
+                      cache_creation_input_tokens=getattr(u, "cache_creation_input_tokens", 0) or 0,
+                      cache_read_input_tokens=getattr(u, "cache_read_input_tokens", 0) or 0,
+                      output_tokens=u.output_tokens or 0, models=[msg.model])
+        usage.cost_usd = list_price_cost(msg.model, usage)
+        text = "".join(b.text for b in msg.content if b.type == "text")
+        return Result(text=text, usage=usage, backend=self.name, raw=None)
+
+    def close(self) -> None:
+        pass
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        self.close()
+
+
+def make_backend(spec: str = "cli", *, model: str | None = None, label: str = "llm", **api_options):
+    """"cli", "cli:<model>", "api" or "api:<model>"; an explicit `model` wins over the spec's."""
+    kind, _, spec_model = spec.partition(":")
+    model = model or spec_model or None
+    if kind == "cli":
+        return ClaudeCliBackend(model=model, label=label)
+    if kind == "api":
+        return AnthropicApiBackend(model=model, **api_options)
+    raise ValueError(f"unknown backend {spec!r}: use cli, cli:<model>, api or api:<model>")

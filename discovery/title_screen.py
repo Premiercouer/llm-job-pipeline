@@ -149,6 +149,7 @@ def main() -> int:
     ap.add_argument("--output", type=Path)
     ap.add_argument("--chunk-size", type=int, default=150)
     ap.add_argument("--model")
+    ap.add_argument("--backend", default="cli", help="cli (default), api or api:<model>")
     ap.add_argument("--timeout", type=float, default=300)
     ap.add_argument("--max-budget-usd", type=float)
     args = ap.parse_args()
@@ -164,7 +165,7 @@ def main() -> int:
         results, summary = {"accepted_ids": [], "rejected_ids": []}, {"source": args.source, "titles": 0, "calls": 0}
     else:
         try:
-            with llm.ClaudeCliBackend(model=args.model, label="title-screen") as backend:
+            with llm.make_backend(args.backend, model=args.model, label="title-screen") as backend:
                 results, summary = screen(jobs, backend, args.source, args.chunk_size, args.timeout,
                                           args.max_budget_usd)
         except (llm.LLMError, RuntimeError) as e:

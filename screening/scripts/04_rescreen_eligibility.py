@@ -16,6 +16,7 @@ Usage:
 """
 import argparse
 import json
+import os
 from datetime import datetime
 import re
 import sys
@@ -61,6 +62,8 @@ def main():
                     help="all = student/co-op/language/citizenship; language = French-related only")
     ap.add_argument("--worker", choices=core.WORKER_MODES,
                     help=f"worker mode (default: ${core.WORKER_ENV} or {core.DEFAULT_WORKER})")
+    ap.add_argument("--backend", default=os.environ.get("JOB_MATCH_BACKEND", "cli"),
+                    help="cli (Claude Code CLI, default) or api / api:<model> (Messages API, single-turn only)")
     ap.add_argument("--max-budget-usd", type=float, help="stop launching workers once this much would be spent")
     ap.add_argument("--dry-run", action="store_true", help="list selected jobs only")
     args = ap.parse_args()
@@ -103,7 +106,7 @@ def main():
         if done % 10 == 0 or done == len(selected):
             print(f"PROGRESS rescreen {done}/{len(selected)} | failed {len(failed)}")
 
-    with core.Worker(mode, core.find_claude(), args.model, args.max_budget_usd) as worker:
+    with core.Worker(mode, core.find_claude() if args.backend == "cli" else None, args.model, args.max_budget_usd, args.backend) as worker:
         print(worker.describe())
         # Blank-JD jobs resolve locally (no model call); only model jobs go through warm-up / the pool.
         queue = []

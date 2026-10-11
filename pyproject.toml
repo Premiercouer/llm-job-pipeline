@@ -10,6 +10,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+api = ["anthropic>=1.0"]               # --backend api: Messages API instead of the Claude Code CLI
 dev = []                              # tests use only the standard library (unittest)
 
 [tool.setuptools]

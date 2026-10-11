@@ -28,7 +28,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent  # screening/: rules, prompts, agent definition
 sys.path.insert(0, str(ROOT.parent))  # repository root
-from common import paths, run_dirs  # noqa: E402
+from common import llm, paths, run_dirs  # noqa: E402
 
 DATA_ROOT = paths.data_dir("screening")  # batches, checkpoints, runtime, handoff output
 BATCH_ROOT = DATA_ROOT / "input_batches"
@@ -536,11 +536,26 @@ class Worker:
     """How to launch one fresh worker for one job, in the selected mode. Use as a context manager:
     the temp cwd (both modes) is removed on exit (after every worker has finished)."""
 
-    def __init__(self, mode, claude_bin, model=None, budget_usd=None):
+    def __init__(self, mode, claude_bin, model=None, budget_usd=None, backend="cli"):
+        """backend "cli" runs the Claude Code CLI (both modes); "api" / "api:<model>" calls the
+        Messages API through common.llm (single-turn only). Everything else (system prompt, hash
+        checks, guardrails, budget, validation) is shared by both backends."""
         self.mode = mode
         self.model = model
         self.claude_bin = claude_bin
-        self.cli_version = claude_cli_version(claude_bin)
+        self.api = None
+        if backend.split(":")[0] == "api":
+            if mode != WORKER_SINGLE_TURN:
+                raise PipelineError("the API backend runs the single-turn worker only (--worker single-turn)")
+            try:
+                self.api = llm.make_backend(backend, model=model)
+            except llm.LLMError as e:
+                raise GlobalFatalError(str(e))
+            if self.api.model not in llm.PRICES:
+                raise GlobalFatalError(f"no list price for {self.api.model}; add it to common/llm.PRICES")
+            self.cli_version = None
+        else:
+            self.cli_version = claude_cli_version(claude_bin)
         self.sources = source_hashes()
         self.budget = Budget(budget_usd, mode) if budget_usd is not None else None
         self.models_seen = set()
@@ -553,6 +568,9 @@ class Worker:
             self.system_prompt_sha256 = sha256_text(self.system_prompt)
             if embedded_source_hashes(self.system_prompt) != self.sources:
                 raise GlobalFatalError("single-turn system prompt does not embed the current source files")
+        if self.api is not None:
+            self.cmd, self.env_extra = None, {}
+        elif mode == WORKER_SINGLE_TURN:
             self.run_dir = run_dirs.new_run_dir("screening")
             self.system_prompt_file = self.run_dir / "system_prompt.md"
             run_dirs.write_private(self.system_prompt_file, self.system_prompt)
@@ -574,6 +592,8 @@ class Worker:
         self.close()
 
     def close(self):
+        if self.api is not None:
+            self.api.close()
         if self.run_dir:
             run_dirs.remove(self.run_dir)
             self.run_dir = self.cwd = None
@@ -589,6 +609,7 @@ class Worker:
         with self._lock:
             models = sorted(self.models_seen)
         return {"worker_mode": self.mode,
+                "backend": self.api.name if self.api else "claude-cli",
                 "effective_model": models[0] if len(models) == 1 else (models or None),
                 "system_prompt_sha256": self.system_prompt_sha256,
                 "screen_job_sha256": self.sources["screen_job_sha256"],
@@ -597,19 +618,22 @@ class Worker:
 
     def describe(self):
         sp = f", system prompt sha256 {self.system_prompt_sha256[:12]}" if self.system_prompt_sha256 else ""
-        return f"worker: {self.mode}{sp}, cli {self.cli_version or '?'}"
+        runtime = f"api {self.api.model}" if self.api else f"cli {self.cli_version or '?'}"
+        return f"worker: {self.mode}{sp}, {runtime}"
 
     def pre_check(self, job, prompt):
         """single-turn, before launch: prompt hash / embedded sources / user prompt shape. Fatal if off."""
         if self.mode != WORKER_SINGLE_TURN:
             return
-        try:
-            on_disk = self.system_prompt_file.read_text(encoding="utf-8")
-        except OSError:
-            on_disk = None
-        if self.cmd[self.cmd.index("--system-prompt-file") + 1] != str(self.system_prompt_file) \
-                or on_disk is None or sha256_text(on_disk) != self.system_prompt_sha256 \
-                or sha256_text(self.system_prompt) != self.system_prompt_sha256:
+        if self.api is None:  # CLI: the prompt file the command points at must still hold the same prompt
+            try:
+                on_disk = self.system_prompt_file.read_text(encoding="utf-8")
+            except OSError:
+                on_disk = None
+            if self.cmd[self.cmd.index("--system-prompt-file") + 1] != str(self.system_prompt_file) \
+                    or on_disk is None or sha256_text(on_disk) != self.system_prompt_sha256:
+                raise GlobalFatalError("single-turn system prompt hash changed during the run")
+        if sha256_text(self.system_prompt) != self.system_prompt_sha256:
             raise GlobalFatalError("single-turn system prompt hash changed during the run")
         if source_hashes() != self.sources:
             raise GlobalFatalError("screen_job.md / candidate profile changed during the run "
@@ -860,6 +884,8 @@ def screen_job(job, worker, timeout, attempt=1):
     single = worker.mode == WORKER_SINGLE_TURN
     prompt = worker.prompt(job)
     worker.pre_check(job, prompt)
+    if worker.api is not None:
+        return _screen_job_api(job, worker, timeout, attempt, prompt)
     env = os.environ.copy()
     env.pop("CLAUDECODE", None)  # allow launching from inside a Claude Code terminal
     env.update(worker.env_extra)
@@ -920,6 +946,50 @@ def screen_job(job, worker, timeout, attempt=1):
             raise NonRetryableJobError(str(e))
         if err:
             raise (NonRetryableJobError if single else PipelineError)(err)
+        return result
+    finally:
+        if worker.budget:
+            worker.budget.settle(reserved, cost)
+
+
+def _screen_job_api(job, worker, timeout, attempt, prompt):
+    """screen_job() through a common.llm backend: same budget, guardrails and validation as the CLI path."""
+    reserved = 0.0
+    with _active_lock:
+        if stop_event.is_set():
+            if worker.budget and worker.budget.stop:
+                raise BudgetExceeded(worker.budget.stop)
+            raise StopRequested("interrupted")
+        if worker.budget:
+            reserved = worker.budget.reserve()
+        metrics["invocations"] += 1
+        if attempt > 1:
+            metrics["retries"] += 1
+    cost = None
+    try:
+        try:
+            res = worker.api.complete(worker.system_prompt, prompt, timeout)
+        except llm.FatalError as e:
+            raise GlobalFatalError(str(e))
+        except llm.InputError as e:
+            raise JobFatalError(str(e))
+        except llm.TransientError as e:
+            raise PipelineError(str(e))  # retryable
+        u = res.usage
+        envelope = {"subtype": "success", "is_error": False, "num_turns": 1, "permission_denials": [],
+                    "total_cost_usd": u.cost_usd, "modelUsage": {m: {} for m in u.models},
+                    "usage": {k: getattr(u, k) for k in ("input_tokens", "cache_creation_input_tokens",
+                                                         "cache_read_input_tokens", "output_tokens")}}
+        usage = worker.post_check(envelope, prompt)  # the same single-turn guardrails as the CLI path
+        cost = usage.get("cost_usd")
+        _record_usage(attempt, usage)
+        try:
+            result = llm.parse_json_object(res.text)
+        except ValueError as e:
+            raise NonRetryableJobError(str(e))
+        err = validate_result(result, job)
+        if err:
+            raise NonRetryableJobError(err)
         return result
     finally:
         if worker.budget:
