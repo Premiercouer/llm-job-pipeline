@@ -1,0 +1,46 @@
+{
+  "_comment": "Fictional demo candidate. Every name, employer, school and contact detail here is invented.",
+  "name": "Morgan Ellis",
+  "file_stem": "Morgan_Ellis",
+  "contact": [
+    {"text": "Toronto, ON"},
+    {"text": "(555) 010-0199"},
+    {"text": "morgan.ellis@example.com", "href": "mailto:morgan.ellis@example.com"},
+    {"text": "linkedin.com/in/example-morgan-ellis", "href": "https://www.linkedin.com/in/example-morgan-ellis/"},
+    {"text": "github.com/example-morgan", "href": "https://github.com/example-morgan"}
+  ],
+  "experience": [
+    {
+      "role": "Data Analyst Intern",
+      "company": "Fabrikam Health Analytics",
+      "date": "Sep 2025 – Apr 2026",
+      "bullet_bank": "fabrikam_health_bullet_bank.md"
+    },
+    {
+      "role": "Business Intelligence Intern",
+      "company": "Northwind Freight Co.",
+      "date": "Apr 2025 – Aug 2025",
+      "bullet_bank": "northwind_freight_bullet_bank.md"
+    }
+  ],
+  "education": [
+    {
+      "degree": "Master of Science in Business Analytics",
+      "school": "Lakeshore University",
+      "details": "GPA: 3.8/4.0",
+      "date": "Sep 2024 – Apr 2026",
+      "coursework": "Data Management, Statistical Learning, Data Visualization, Optimization"
+    },
+    {
+      "degree": "Bachelor of Science in Statistics",
+      "school": "Riverside Institute of Technology",
+      "details": "",
+      "date": "Sep 2019 – Jun 2023",
+      "coursework": ""
+    }
+  ],
+  "knowledge": {
+    "project_library": "other_projects_library.md",
+    "skills": "skills_master.md"
+  }
+}

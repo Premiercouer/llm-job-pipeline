@@ -1,0 +1,9 @@
+# Copy to config/local.toml (git-ignored) and adjust.
+# Every value can also be set with an environment variable (shown on the right).
+
+[paths]
+# All run artefacts: discovery outputs, batches, checkpoints, logs, resumes.
+workspace = "workspace"                     # LJP_WORKSPACE
+# Candidate facts used by screening and resume generation:
+#   capability_profile.md, bullet banks, skills_master.md, other_projects_library.md
+candidate_dir = "examples/candidate"        # LJP_CANDIDATE_DIR

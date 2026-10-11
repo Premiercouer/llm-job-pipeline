@@ -1,0 +1,1196 @@
+{
+ "generated_at": "2026-10-07T00:26:36.571121+00:00",
+ "kind": "ashby_board_pool",
+ "board_count": 297,
+ "note": "Ashby boards with Toronto / GTA / Canada-remote postings. Directory source: https://raw.githubusercontent.com/fyrosofttech/lastroundai-hiring-data/main/ats-directory/lastroundai-ats-company-directory-2026-08.csv",
+ "boards": [
+  {
+   "company": "1Password",
+   "board_slug": "1password"
+  },
+  {
+   "company": "Abacum",
+   "board_slug": "abacum"
+  },
+  {
+   "company": "Abound",
+   "board_slug": "abound"
+  },
+  {
+   "company": "Absorb",
+   "board_slug": "absorblms"
+  },
+  {
+   "company": "Accord",
+   "board_slug": "accord"
+  },
+  {
+   "company": "adaption",
+   "board_slug": "adaption"
+  },
+  {
+   "company": "AeroVect",
+   "board_slug": "aerovect"
+  },
+  {
+   "company": "Agentis Capital Advisors",
+   "board_slug": "agentis-capital-advisors"
+  },
+  {
+   "company": "AIOS (YC W20/S21)",
+   "board_slug": "aios"
+  },
+  {
+   "company": "Airwallex",
+   "board_slug": "airwallex"
+  },
+  {
+   "company": "Akur8",
+   "board_slug": "akur8"
+  },
+  {
+   "company": "Alan",
+   "board_slug": "alan"
+  },
+  {
+   "company": "Allica Bank",
+   "board_slug": "allica-bank"
+  },
+  {
+   "company": "Alternative Payments",
+   "board_slug": "alternativepayments"
+  },
+  {
+   "company": "Andela",
+   "board_slug": "andela"
+  },
+  {
+   "company": "Aphex",
+   "board_slug": "aphex"
+  },
+  {
+   "company": "Aries.com",
+   "board_slug": "aries"
+  },
+  {
+   "company": "Ashby",
+   "board_slug": "ashby"
+  },
+  {
+   "company": "AtoB",
+   "board_slug": "atob"
+  },
+  {
+   "company": "Atomic",
+   "board_slug": "atomic"
+  },
+  {
+   "company": "Aurora Solar",
+   "board_slug": "aurorasolar"
+  },
+  {
+   "company": "Away",
+   "board_slug": "away"
+  },
+  {
+   "company": "Bankjoy",
+   "board_slug": "bankjoy"
+  },
+  {
+   "company": "Baseten",
+   "board_slug": "baseten"
+  },
+  {
+   "company": "Beacon Software",
+   "board_slug": "beaconsoftware"
+  },
+  {
+   "company": "Benevity",
+   "board_slug": "benevity"
+  },
+  {
+   "company": "billups",
+   "board_slug": "billups"
+  },
+  {
+   "company": "Blockstream",
+   "board_slug": "blockstream"
+  },
+  {
+   "company": "Bree",
+   "board_slug": "bree"
+  },
+  {
+   "company": "Cambio AI Inc.",
+   "board_slug": "cambio"
+  },
+  {
+   "company": "Camunda",
+   "board_slug": "camunda"
+  },
+  {
+   "company": "CanadaVisa",
+   "board_slug": "canadavisa"
+  },
+  {
+   "company": "Canals",
+   "board_slug": "canals"
+  },
+  {
+   "company": "Cantina",
+   "board_slug": "cantina"
+  },
+  {
+   "company": "Cargado",
+   "board_slug": "cargado"
+  },
+  {
+   "company": "Cedar",
+   "board_slug": "cedar"
+  },
+  {
+   "company": "Chainalysis",
+   "board_slug": "chainalysis-careers"
+  },
+  {
+   "company": "Chatbase",
+   "board_slug": "chatbase"
+  },
+  {
+   "company": "Chromatic",
+   "board_slug": "chromatic"
+  },
+  {
+   "company": "Clearco",
+   "board_slug": "clearco"
+  },
+  {
+   "company": "Clera",
+   "board_slug": "clera"
+  },
+  {
+   "company": "ClickUp",
+   "board_slug": "clickup"
+  },
+  {
+   "company": "Clipboard",
+   "board_slug": "clipboard"
+  },
+  {
+   "company": "Coder",
+   "board_slug": "coder"
+  },
+  {
+   "company": "Cohere",
+   "board_slug": "cohere"
+  },
+  {
+   "company": "Confluent",
+   "board_slug": "confluent"
+  },
+  {
+   "company": "CorePlan",
+   "board_slug": "coreplan"
+  },
+  {
+   "company": "CreatorIQ",
+   "board_slug": "creatoriq"
+  },
+  {
+   "company": "Credit Genie",
+   "board_slug": "creditgenie"
+  },
+  {
+   "company": "Cryptio",
+   "board_slug": "cryptio"
+  },
+  {
+   "company": "CUBE",
+   "board_slug": "cube"
+  },
+  {
+   "company": "Cuesta Partners",
+   "board_slug": "cuesta-partners"
+  },
+  {
+   "company": "Dandy",
+   "board_slug": "dandy"
+  },
+  {
+   "company": "Datatonic",
+   "board_slug": "datatonic"
+  },
+  {
+   "company": "DealMaker",
+   "board_slug": "dealmaker"
+  },
+  {
+   "company": "Decagon",
+   "board_slug": "decagon"
+  },
+  {
+   "company": "Dedale Intelligence",
+   "board_slug": "dedale-intelligence"
+  },
+  {
+   "company": "DeepJudge",
+   "board_slug": "deepjudge"
+  },
+  {
+   "company": "Diagrid",
+   "board_slug": "diagrid"
+  },
+  {
+   "company": "Directive",
+   "board_slug": "directive"
+  },
+  {
+   "company": "Docebo",
+   "board_slug": "docebo"
+  },
+  {
+   "company": "Docker",
+   "board_slug": "docker"
+  },
+  {
+   "company": "Doppel",
+   "board_slug": "doppel"
+  },
+  {
+   "company": "DualEntry",
+   "board_slug": "dualentry"
+  },
+  {
+   "company": "DuckDuckGo",
+   "board_slug": "duck-duck-go"
+  },
+  {
+   "company": "Eastwood & Cleef",
+   "board_slug": "eastwoodcleef"
+  },
+  {
+   "company": "ElevenLabs",
+   "board_slug": "elevenlabs"
+  },
+  {
+   "company": "Eli Health",
+   "board_slug": "eli"
+  },
+  {
+   "company": "EliseAI",
+   "board_slug": "eliseai"
+  },
+  {
+   "company": "Emergence Software",
+   "board_slug": "emergence"
+  },
+  {
+   "company": "Everis",
+   "board_slug": "everis"
+  },
+  {
+   "company": "Evolve AI Ltd",
+   "board_slug": "evolve"
+  },
+  {
+   "company": "Exegy",
+   "board_slug": "exegy"
+  },
+  {
+   "company": "FacilityOS",
+   "board_slug": "facilityos"
+  },
+  {
+   "company": "Featherless AI",
+   "board_slug": "featherlessai"
+  },
+  {
+   "company": "Feathery",
+   "board_slug": "feathery"
+  },
+  {
+   "company": "Felix",
+   "board_slug": "felix"
+  },
+  {
+   "company": "Fieldguide",
+   "board_slug": "fieldguide"
+  },
+  {
+   "company": "Filigran",
+   "board_slug": "filigran"
+  },
+  {
+   "company": "Finni Health",
+   "board_slug": "finni-health"
+  },
+  {
+   "company": "Firecrawl",
+   "board_slug": "firecrawl"
+  },
+  {
+   "company": "FirstPrinciples",
+   "board_slug": "firstprinciples"
+  },
+  {
+   "company": "Fitt Talent Partners",
+   "board_slug": "fitt"
+  },
+  {
+   "company": "Flagler Health",
+   "board_slug": "flaglerhealth"
+  },
+  {
+   "company": "Float",
+   "board_slug": "float"
+  },
+  {
+   "company": "FloSports, Inc.",
+   "board_slug": "flosports"
+  },
+  {
+   "company": "Found",
+   "board_slug": "found"
+  },
+  {
+   "company": "FS Studio",
+   "board_slug": "fs-studio"
+  },
+  {
+   "company": "FutureFit AI",
+   "board_slug": "futurefitai"
+  },
+  {
+   "company": "G2i Inc.",
+   "board_slug": "g2i"
+  },
+  {
+   "company": "Gardens Interactive",
+   "board_slug": "gardens"
+  },
+  {
+   "company": "Gearset",
+   "board_slug": "gearset"
+  },
+  {
+   "company": "Glia",
+   "board_slug": "glia"
+  },
+  {
+   "company": "Goodstack",
+   "board_slug": "goodstack"
+  },
+  {
+   "company": "Goody",
+   "board_slug": "goody"
+  },
+  {
+   "company": "Gorgias",
+   "board_slug": "gorgias"
+  },
+  {
+   "company": "GotPhoto",
+   "board_slug": "gotphoto"
+  },
+  {
+   "company": "GPTZero",
+   "board_slug": "gptzero"
+  },
+  {
+   "company": "Halter",
+   "board_slug": "halter"
+  },
+  {
+   "company": "Harvey",
+   "board_slug": "harvey"
+  },
+  {
+   "company": "Heirloom Carbon",
+   "board_slug": "heirloomcarbon"
+  },
+  {
+   "company": "Helm.ai",
+   "board_slug": "helm-ai"
+  },
+  {
+   "company": "Highbeam",
+   "board_slug": "highbeam"
+  },
+  {
+   "company": "HighlightTA",
+   "board_slug": "highlightta"
+  },
+  {
+   "company": "Hims & Hers",
+   "board_slug": "hims-and-hers"
+  },
+  {
+   "company": "Hinge Health",
+   "board_slug": "hinge-health"
+  },
+  {
+   "company": "Homebase",
+   "board_slug": "homebase"
+  },
+  {
+   "company": "Homera Health",
+   "board_slug": "homera-health"
+  },
+  {
+   "company": "Hopper",
+   "board_slug": "hopper"
+  },
+  {
+   "company": "Horizon3 AI",
+   "board_slug": "horizon3ai"
+  },
+  {
+   "company": "Hubstaff",
+   "board_slug": "hubstaff"
+  },
+  {
+   "company": "HUMAN",
+   "board_slug": "human"
+  },
+  {
+   "company": "Ideals",
+   "board_slug": "ideals"
+  },
+  {
+   "company": "Ideogram",
+   "board_slug": "ideogram"
+  },
+  {
+   "company": "Ignition",
+   "board_slug": "ignition"
+  },
+  {
+   "company": "Illumio",
+   "board_slug": "illumio"
+  },
+  {
+   "company": "Infisical",
+   "board_slug": "infisical"
+  },
+  {
+   "company": "InfluxData",
+   "board_slug": "influxdata"
+  },
+  {
+   "company": "Inspiren",
+   "board_slug": "inspiren"
+  },
+  {
+   "company": "Instructure, Inc.",
+   "board_slug": "instructure"
+  },
+  {
+   "company": "Intellistack",
+   "board_slug": "intellistack"
+  },
+  {
+   "company": "Invert",
+   "board_slug": "invert"
+  },
+  {
+   "company": "iVerify",
+   "board_slug": "iverify"
+  },
+  {
+   "company": "Jane",
+   "board_slug": "jane"
+  },
+  {
+   "company": "Jobber",
+   "board_slug": "jobber"
+  },
+  {
+   "company": "Valence",
+   "board_slug": "jobs-valence"
+  },
+  {
+   "company": "Juniper Square",
+   "board_slug": "junipersquare"
+  },
+  {
+   "company": "Katana",
+   "board_slug": "katana"
+  },
+  {
+   "company": "Keyrock",
+   "board_slug": "keyrock"
+  },
+  {
+   "company": "Kindred",
+   "board_slug": "kindred"
+  },
+  {
+   "company": "Klue",
+   "board_slug": "klue"
+  },
+  {
+   "company": "KOHO",
+   "board_slug": "koho"
+  },
+  {
+   "company": "Kong",
+   "board_slug": "kong"
+  },
+  {
+   "company": "Lavendo",
+   "board_slug": "lavendo"
+  },
+  {
+   "company": "LawDepot",
+   "board_slug": "lawdepot"
+  },
+  {
+   "company": "Lazer",
+   "board_slug": "lazer"
+  },
+  {
+   "company": "Legora AB",
+   "board_slug": "legora"
+  },
+  {
+   "company": "lemlist",
+   "board_slug": "lemlist"
+  },
+  {
+   "company": "Lightspeed Commerce, Inc.",
+   "board_slug": "lightspeedhq"
+  },
+  {
+   "company": "LILT (Production)",
+   "board_slug": "lilt-production"
+  },
+  {
+   "company": "Limbic",
+   "board_slug": "limbic"
+  },
+  {
+   "company": "Litmus",
+   "board_slug": "litmus"
+  },
+  {
+   "company": "LiveKit",
+   "board_slug": "livekit"
+  },
+  {
+   "company": "Loopio Inc.",
+   "board_slug": "loopio"
+  },
+  {
+   "company": "Lyric",
+   "board_slug": "lyric"
+  },
+  {
+   "company": "Magical",
+   "board_slug": "magical"
+  },
+  {
+   "company": "MaintainX",
+   "board_slug": "maintainx"
+  },
+  {
+   "company": "Makai Labs",
+   "board_slug": "makai-labs"
+  },
+  {
+   "company": "Masabi",
+   "board_slug": "masabi"
+  },
+  {
+   "company": "Maxima",
+   "board_slug": "maxima"
+  },
+  {
+   "company": "Maze",
+   "board_slug": "mazedesign"
+  },
+  {
+   "company": "Menlo Security",
+   "board_slug": "menlosecurity"
+  },
+  {
+   "company": "Meshy LLC",
+   "board_slug": "meshy"
+  },
+  {
+   "company": "Method Integration Inc.",
+   "board_slug": "method-crm"
+  },
+  {
+   "company": "Midnite",
+   "board_slug": "midnite"
+  },
+  {
+   "company": "Mimica",
+   "board_slug": "mimica"
+  },
+  {
+   "company": "Miovision",
+   "board_slug": "miovision"
+  },
+  {
+   "company": "Monarch Money",
+   "board_slug": "monarchmoney"
+  },
+  {
+   "company": "Montu UK",
+   "board_slug": "montu-uk"
+  },
+  {
+   "company": "Mural",
+   "board_slug": "mural"
+  },
+  {
+   "company": "Mysten Labs",
+   "board_slug": "mystenlabs"
+  },
+  {
+   "company": "n8n",
+   "board_slug": "n8n"
+  },
+  {
+   "company": "Nango",
+   "board_slug": "nango"
+  },
+  {
+   "company": "Nascent",
+   "board_slug": "nascent"
+  },
+  {
+   "company": "NationGraph",
+   "board_slug": "nationgraph"
+  },
+  {
+   "company": "Neo Financial",
+   "board_slug": "neofinancial"
+  },
+  {
+   "company": "NerdWallet",
+   "board_slug": "nerdwallet"
+  },
+  {
+   "company": "NetBox Labs",
+   "board_slug": "netboxlabs"
+  },
+  {
+   "company": "NETGEAR",
+   "board_slug": "netgear"
+  },
+  {
+   "company": "nomic",
+   "board_slug": "nomic"
+  },
+  {
+   "company": "Nuclear Promise X",
+   "board_slug": "npx"
+  },
+  {
+   "company": "Nubank",
+   "board_slug": "nubank"
+  },
+  {
+   "company": "Nylas",
+   "board_slug": "nylas"
+  },
+  {
+   "company": "Obsidian Systems",
+   "board_slug": "obsidiansystems"
+  },
+  {
+   "company": "OLIX",
+   "board_slug": "olix"
+  },
+  {
+   "company": "Omnea",
+   "board_slug": "omnea"
+  },
+  {
+   "company": "OnHires",
+   "board_slug": "onhires"
+  },
+  {
+   "company": "OpenAI",
+   "board_slug": "openai"
+  },
+  {
+   "company": "OpsMill",
+   "board_slug": "opsmill"
+  },
+  {
+   "company": "Oscilar",
+   "board_slug": "oscilar"
+  },
+  {
+   "company": "Owner.com",
+   "board_slug": "owner"
+  },
+  {
+   "company": "Oyster",
+   "board_slug": "oyster"
+  },
+  {
+   "company": "Paddle",
+   "board_slug": "paddle"
+  },
+  {
+   "company": "Palmstreet",
+   "board_slug": "palmstreet"
+  },
+  {
+   "company": "Paradox",
+   "board_slug": "paradox"
+  },
+  {
+   "company": "Passage",
+   "board_slug": "passage"
+  },
+  {
+   "company": "Patlytics, Inc.",
+   "board_slug": "patlytics"
+  },
+  {
+   "company": "Pebl",
+   "board_slug": "pebl"
+  },
+  {
+   "company": "People Culture Talent",
+   "board_slug": "people-culture-talent"
+  },
+  {
+   "company": "Percona",
+   "board_slug": "percona"
+  },
+  {
+   "company": "Pergolux",
+   "board_slug": "pergolux"
+  },
+  {
+   "company": "PermitFlow",
+   "board_slug": "permitflow"
+  },
+  {
+   "company": "Perplexity",
+   "board_slug": "perplexity"
+  },
+  {
+   "company": "Phoenix",
+   "board_slug": "phoenix"
+  },
+  {
+   "company": "Phylo, Inc.",
+   "board_slug": "phylo"
+  },
+  {
+   "company": "Planera",
+   "board_slug": "planera"
+  },
+  {
+   "company": "Planhat",
+   "board_slug": "planhat"
+  },
+  {
+   "company": "Pliant",
+   "board_slug": "pliant"
+  },
+  {
+   "company": "Polar Analytics",
+   "board_slug": "polaranalytics"
+  },
+  {
+   "company": "Pragmatike",
+   "board_slug": "pragmatike"
+  },
+  {
+   "company": "Procurify",
+   "board_slug": "procurify"
+  },
+  {
+   "company": "Quantcast",
+   "board_slug": "quantcast"
+  },
+  {
+   "company": "Quantexa",
+   "board_slug": "quantexa"
+  },
+  {
+   "company": "Quora",
+   "board_slug": "quora"
+  },
+  {
+   "company": "Ramp",
+   "board_slug": "ramp"
+  },
+  {
+   "company": "Recharge",
+   "board_slug": "recharge"
+  },
+  {
+   "company": "Redis",
+   "board_slug": "redis"
+  },
+  {
+   "company": "Reedsy",
+   "board_slug": "reedsy"
+  },
+  {
+   "company": "Relay",
+   "board_slug": "relayfi"
+  },
+  {
+   "company": "Remarcable, Inc.",
+   "board_slug": "remarcable-inc"
+  },
+  {
+   "company": "Render",
+   "board_slug": "render"
+  },
+  {
+   "company": "Replicant",
+   "board_slug": "replicant"
+  },
+  {
+   "company": "ResQ",
+   "board_slug": "resq"
+  },
+  {
+   "company": "Retell AI",
+   "board_slug": "retell-ai"
+  },
+  {
+   "company": "Revic",
+   "board_slug": "revic"
+  },
+  {
+   "company": "Rewind",
+   "board_slug": "rewind"
+  },
+  {
+   "company": "Ribbon AI",
+   "board_slug": "ribbon-ai"
+  },
+  {
+   "company": "Riveron",
+   "board_slug": "riveron"
+  },
+  {
+   "company": "Rollstack",
+   "board_slug": "rollstack"
+  },
+  {
+   "company": "RoomPriceGenie",
+   "board_slug": "roompricegenie"
+  },
+  {
+   "company": "Safe Software",
+   "board_slug": "safe"
+  },
+  {
+   "company": "Sailor Health",
+   "board_slug": "sailorhealth"
+  },
+  {
+   "company": "SandboxAQ",
+   "board_slug": "sandboxaq"
+  },
+  {
+   "company": "Sanity",
+   "board_slug": "sanity"
+  },
+  {
+   "company": "Sardine",
+   "board_slug": "sardine"
+  },
+  {
+   "company": "Saris AI",
+   "board_slug": "saris-ai"
+  },
+  {
+   "company": "Scribd, Inc.",
+   "board_slug": "scribdinc"
+  },
+  {
+   "company": "Semperis",
+   "board_slug": "semperis"
+  },
+  {
+   "company": "Sensor Tower",
+   "board_slug": "sensor-tower"
+  },
+  {
+   "company": "Sentry",
+   "board_slug": "sentry"
+  },
+  {
+   "company": "Serve Robotics",
+   "board_slug": "serverobotics"
+  },
+  {
+   "company": "Short Story",
+   "board_slug": "shortstory"
+  },
+  {
+   "company": "Siena AI",
+   "board_slug": "siena"
+  },
+  {
+   "company": "Sierra",
+   "board_slug": "sierra"
+  },
+  {
+   "company": "Skimmer",
+   "board_slug": "skimmer"
+  },
+  {
+   "company": "Sky Mavis",
+   "board_slug": "skymavis"
+  },
+  {
+   "company": "SkyWatch",
+   "board_slug": "skywatch"
+  },
+  {
+   "company": "Snowball",
+   "board_slug": "snowball"
+  },
+  {
+   "company": "Snowflake",
+   "board_slug": "snowflake"
+  },
+  {
+   "company": "Snyk",
+   "board_slug": "snyk"
+  },
+  {
+   "company": "Socket",
+   "board_slug": "socket"
+  },
+  {
+   "company": "Socure",
+   "board_slug": "socure"
+  },
+  {
+   "company": "Solink",
+   "board_slug": "solink"
+  },
+  {
+   "company": "Solstice",
+   "board_slug": "solstice"
+  },
+  {
+   "company": "Spare",
+   "board_slug": "spare"
+  },
+  {
+   "company": "Stedi",
+   "board_slug": "stedi"
+  },
+  {
+   "company": "Steel",
+   "board_slug": "steel"
+  },
+  {
+   "company": "Stellar Development Foundation",
+   "board_slug": "stellar"
+  },
+  {
+   "company": "Stream",
+   "board_slug": "stream"
+  },
+  {
+   "company": "Superpilot Labs",
+   "board_slug": "superpilot-labs"
+  },
+  {
+   "company": "SurveyMonkey",
+   "board_slug": "surveymonkey"
+  },
+  {
+   "company": "Symbiotic",
+   "board_slug": "symbiotic"
+  },
+  {
+   "company": "Synthetic",
+   "board_slug": "synthetic"
+  },
+  {
+   "company": "Tailwind",
+   "board_slug": "tailwind"
+  },
+  {
+   "company": "Technitask",
+   "board_slug": "technitask"
+  },
+  {
+   "company": "Tekion",
+   "board_slug": "tekion"
+  },
+  {
+   "company": "Tempo",
+   "board_slug": "tempo"
+  },
+  {
+   "company": "Temporal Technologies",
+   "board_slug": "temporal"
+  },
+  {
+   "company": "Tenor",
+   "board_slug": "tenor"
+  },
+  {
+   "company": "Terminal",
+   "board_slug": "terminal"
+  },
+  {
+   "company": "Tetrix",
+   "board_slug": "tetrix"
+  },
+  {
+   "company": "thatgamecompany",
+   "board_slug": "thatgamecompany"
+  },
+  {
+   "company": "The Flex",
+   "board_slug": "the-flex"
+  },
+  {
+   "company": "Thumbtack",
+   "board_slug": "thumbtack"
+  },
+  {
+   "company": "Tilt Finance",
+   "board_slug": "tilthq"
+  },
+  {
+   "company": "Tonal",
+   "board_slug": "tonal"
+  },
+  {
+   "company": "Top Hat",
+   "board_slug": "top-hat"
+  },
+  {
+   "company": "TradingHub",
+   "board_slug": "tradinghub"
+  },
+  {
+   "company": "Tremendous",
+   "board_slug": "tremendous"
+  },
+  {
+   "company": "TRM Labs",
+   "board_slug": "trm-labs"
+  },
+  {
+   "company": "Trulioo",
+   "board_slug": "trulioo"
+  },
+  {
+   "company": "turbopuffer",
+   "board_slug": "turbopuffer"
+  },
+  {
+   "company": "Uberall",
+   "board_slug": "uberall"
+  },
+  {
+   "company": "UiPath",
+   "board_slug": "uipath"
+  },
+  {
+   "company": "Uncountable Inc.",
+   "board_slug": "uncountable"
+  },
+  {
+   "company": "Vanta",
+   "board_slug": "vanta"
+  },
+  {
+   "company": "Vantage",
+   "board_slug": "vantageanalytics"
+  },
+  {
+   "company": "Venn",
+   "board_slug": "venn"
+  },
+  {
+   "company": "Viggle AI",
+   "board_slug": "viggle"
+  },
+  {
+   "company": "Vistar Media",
+   "board_slug": "vistar"
+  },
+  {
+   "company": "Voldex Games",
+   "board_slug": "voldex"
+  },
+  {
+   "company": "Wealthsimple Technologies",
+   "board_slug": "wealthsimple"
+  },
+  {
+   "company": "WeTravel",
+   "board_slug": "wetravel"
+  },
+  {
+   "company": "Willow Health",
+   "board_slug": "willow-health"
+  },
+  {
+   "company": "Winona",
+   "board_slug": "winona"
+  },
+  {
+   "company": "WorkOS",
+   "board_slug": "workos"
+  },
+  {
+   "company": "WorkWhile",
+   "board_slug": "workwhilejobs"
+  },
+  {
+   "company": "Wrapbook",
+   "board_slug": "wrapbook"
+  },
+  {
+   "company": "XBOW",
+   "board_slug": "xbowcareers"
+  },
+  {
+   "company": "Xenon Pharmaceuticals",
+   "board_slug": "xenon"
+  },
+  {
+   "company": "Xero",
+   "board_slug": "xero"
+  },
+  {
+   "company": "XYZ Reality",
+   "board_slug": "xyz-reality"
+  },
+  {
+   "company": "Yobi",
+   "board_slug": "yobi"
+  },
+  {
+   "company": "Yotta Labs",
+   "board_slug": "yotta"
+  },
+  {
+   "company": "ZayZoon",
+   "board_slug": "zayzoon"
+  },
+  {
+   "company": "Zip",
+   "board_slug": "zip"
+  },
+  {
+   "company": "ZURU",
+   "board_slug": "zuru"
+  }
+ ]
+}

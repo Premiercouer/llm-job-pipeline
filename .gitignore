@@ -1,0 +1,52 @@
+# ---- Python / tooling ----
+__pycache__/
+*.py[cod]
+.venv*/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+node_modules/
+.DS_Store
+
+# ---- Secrets / local config ----
+.env
+.env.*
+!.env.example
+config/local*.toml
+config/*.local.toml
+*.pem
+*.key
+cookies*.json
+
+# ---- Runtime state, logs, generated data (never committed) ----
+.runtime/
+runtime/
+state/
+logs/
+*.log
+*.jsonl
+data/
+output/
+outputs/
+results/
+input_batches/
+jobs/
+.snap_tmp*
+
+# ---- Personal data (real candidate files live outside the repo) ----
+# Only the fictional candidate in examples/candidate/ is tracked.
+chrome-automation-profile/
+*profile*/
+application_list*.json
+saved_qa*.json
+pipeline_tracker*.csv
+transcript*
+*.pdf
+*.docx
+!examples/**/*.pdf
+_quarantine/
+workspace/
