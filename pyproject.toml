@@ -1,0 +1,16 @@
+[project]
+name = "llm-job-pipeline"
+version = "0.1.0"
+description = "LLM-powered job triage and resume generation: grounded screening, crash-safe external review, one-page resumes"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.11"            # tomllib, X | Y annotations evaluated at runtime
+dependencies = [
+    "pymupdf>=1.24",                  # resume stage 4: PDF page count / overflow lines
+]
+
+[project.optional-dependencies]
+dev = []                              # tests use only the standard library (unittest)
+
+[tool.setuptools]
+packages = []                         # scripts are run in place; nothing is installed as a package

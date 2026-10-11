@@ -1,0 +1,63 @@
+{
+ "date": "2026-10-11",
+ "job_count": 8,
+ "jobs": [
+  {
+   "company": "Contoso Retail",
+   "position": "Data Analyst",
+   "jd": "Contoso Retail is looking for a Data Analyst to join our merchandising analytics team in Toronto. You will build SQL and Python pipelines that consolidate sales, inventory and pricing data from several source systems. You will design Power BI dashboards that store managers use every week. You will clean messy multi-source data and document data quality issues. This is an entry-level role open to recent graduates. Experience with BigQuery or another cloud warehouse is an asset.",
+   "apply_url": "https://jobs.example.com/1",
+   "source_key": "https://jobs.example.com/1"
+  },
+  {
+   "company": "Woodgrove Bank",
+   "position": "Business Intelligence Analyst",
+   "jd": "Woodgrove Bank's operations team needs a Business Intelligence Analyst. You will gather requirements from operations managers and translate them into KPI definitions. You will develop and maintain Tableau and Power BI reports on loan processing times. You will write SQL queries against our data warehouse and automate recurring reports with Python. One year of analytics experience, an internship or co-op term counts. Strong communication skills are required.",
+   "apply_url": "https://jobs.example.com/2",
+   "source_key": "https://jobs.example.com/2"
+  },
+  {
+   "company": "Tailspin Analytics",
+   "position": "Junior Data Scientist",
+   "jd": "Tailspin Analytics builds forecasting products for airlines. As a Junior Data Scientist you will engineer features from large booking datasets with PySpark. You will train and evaluate classification and forecasting models with scikit-learn and XGBoost. You will compare models against baselines and present results to product managers. A degree in statistics, computer science or a related field is required. Recent graduates are welcome to apply.",
+   "apply_url": "https://jobs.example.com/3",
+   "source_key": "https://jobs.example.com/3"
+  },
+  {
+   "company": "Litware Health",
+   "position": "Analytics Engineer",
+   "jd": "Litware Health is hiring an Analytics Engineer to own data transformation for our clinical reporting. You will build and test ELT models on our cloud data platform and write SQL that turns raw claims and visit data into analysis-ready tables. You will monitor data quality and fix pipeline failures. You will partner with analysts on dashboard requirements. Familiarity with dbt or Airflow is a plus but not required for this junior role.",
+   "apply_url": "https://jobs.example.com/4",
+   "source_key": "https://jobs.example.com/4"
+  },
+  {
+   "company": "Proseware Logistics",
+   "position": "Operations Data Analyst",
+   "jd": "Proseware Logistics moves freight across Canada. The Operations Data Analyst will analyze lane costs, on-time performance and carrier mix. You will integrate carrier data from REST APIs and spreadsheets into one clean dataset. You will build dashboards and present weekly findings to regional managers. You will standardize carrier names and rate codes to remove duplicates. Excel, SQL and Python skills are required.",
+   "apply_url": "https://jobs.example.com/5",
+   "source_key": "https://jobs.example.com/5"
+  },
+  {
+   "company": "Adventure Works",
+   "position": "Senior Data Engineer",
+   "jd": "Adventure Works is looking for a Senior Data Engineer to lead the design of our streaming platform. You must have 7+ years of experience building distributed data systems in production. You will mentor a team of four engineers and own the Kafka and Kubernetes infrastructure. You will set technical direction for data architecture across the company.",
+   "apply_url": "https://jobs.example.com/6",
+   "source_key": "https://jobs.example.com/6"
+  },
+  {
+   "company": "Wide World Importers",
+   "position": "Data Analyst (Bilingual)",
+   "jd": "Wide World Importers is hiring a Data Analyst for our Montreal office. Fluency in French and English is required for daily communication with suppliers. You will prepare sales reports in Excel and Power BI and support the procurement team with data requests. You will reconcile supplier invoices against purchase orders.",
+   "apply_url": "https://jobs.example.com/7",
+   "source_key": "https://jobs.example.com/7"
+  },
+  {
+   "company": "Alpine Ski House",
+   "position": "Data Analytics Co-op Student",
+   "jd": "Alpine Ski House offers a four-month Data Analytics co-op placement. Applicants must be currently enrolled in a university co-op program and returning to school after the term. You will help analyze lift ticket sales and visitor surveys and build simple dashboards. You will support the marketing team with ad-hoc data pulls.",
+   "apply_url": "https://jobs.example.com/8",
+   "source_key": "https://jobs.example.com/8"
+  }
+ ],
+ "_comment": "Fictional postings for the offline demo. Companies are Microsoft's standard fictional names."
+}

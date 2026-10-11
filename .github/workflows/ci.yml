@@ -1,0 +1,55 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  safety:
+    name: public-safety scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: python tools/check_public_safety.py
+
+  test:
+    name: tests (py${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: pip install "pymupdf>=1.24"
+      - name: offline test suites
+        run: python tools/run_tests.py
+
+  demo:
+    name: offline end-to-end demo
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install "pymupdf>=1.24"
+      - name: run demo (fake model CLI, mock review provider, fictional candidate)
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: python demo/run_demo.py --workspace "$RUNNER_TEMP/ljp-demo"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: demo-resumes
+          path: ${{ runner.temp }}/ljp-demo/resume/jobs/**/resume.pdf
+          if-no-files-found: error

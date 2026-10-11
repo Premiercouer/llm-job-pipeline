@@ -19,8 +19,14 @@ side effects: it reads config but never creates directories.
 from __future__ import annotations
 
 import os
-import tomllib
+import sys
 from pathlib import Path
+
+if sys.version_info < (3, 11):  # fail with a clear message instead of an ImportError below
+    raise SystemExit(f"llm-job-pipeline needs Python 3.11+ (running {sys.version.split()[0]} at "
+                     f"{sys.executable}); see pyproject.toml")
+
+import tomllib  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
