@@ -118,7 +118,7 @@ Expected structure:
 }
 ```
 
-`<...>` 是 Python 提供的实际值（来自候选人的 `candidate.json`）；示例只展示第 1 条。
+`<...>` is the actual value supplied by Python (from the candidate's `candidate.json`); the example shows only the first entry.
 
 This is the same schema as the `instructions/resume_v2.md` Output Contract. Use the actual schema supplied by Python. Do not add, remove, or rename fields, and do not change field types (for example, `project` is one object and `project.bullet` is one string).
 

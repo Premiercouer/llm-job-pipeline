@@ -167,10 +167,10 @@ def worker_input(job: dict, allow_research: bool, today: date | None = None) -> 
 
 def build_prompt(payload: dict) -> str:
     return p02.single_turn.wrap_job(
-        "请严格按照 instructions/cover_letter.md 和 cover-letter-worker 的 Execution Contract，"
-        "为下面这 1 个职位生成 Cover Letter 正文。只返回 1 个 JSON object："
+        "Write the cover letter body for the 1 job below, strictly following instructions/cover_letter.md "
+        "and the cover-letter-worker Execution Contract. Return only 1 JSON object: "
         '{"paragraphs": {"opening": "...", "technical_fit": "...", "company_fit": "...", '
-        '"closing": "..."}}（paragraphs 是 object，不是 array），不要输出任何其他内容。', payload)
+        '"closing": "..."}} (paragraphs is an object, not an array) and nothing else.', payload)
 
 
 # --------------------------------------------------------------- validation

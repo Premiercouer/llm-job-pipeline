@@ -1,18 +1,18 @@
 # Title Screening
 
-## 任务
+## Task
 
-只根据职位 `position`（职位 title）做高召回语义宽匹配，判断该职位是否值得进入后续 Job Match。
+Based only on the job's `position` (the job title), perform a high-recall broad semantic match to decide whether the job is worth passing on to the subsequent Job Match stage.
 
-不要根据不存在的 JD、公司背景或其他信息进行推断。
+Do not make inferences based on a nonexistent JD, company background, or other information.
 
-核心原则：
+Core principle:
 
-> 不确定时保留。只有明显无关的职位才拒绝。
+> When uncertain, keep. Only reject jobs that are clearly irrelevant.
 
-## 保留范围
+## Scope to Keep
 
-保留与以下方向相关或可能相关的职位：
+Keep jobs that are related, or possibly related, to the following areas:
 
 - Data / Analytics / BI / Reporting / Insights
 - Business Analyst / Operations Analyst
@@ -24,35 +24,35 @@
 - Strategy / Planning / Pricing / Economics / Forecasting
 - RevOps / GTM Planning / Sales Effectiveness
 - Process / Performance Improvement
-- 其他明显以数据、分析、建模或研究为核心的岗位
+- Other jobs clearly centered on data, analysis, modelling, or research
 
-如果 title 比较模糊，仅凭名称无法判断具体职责，也应保留。
+If the title is fairly vague and the specific responsibilities cannot be determined from the name alone, the job should also be kept.
 
-## 明确拒绝
+## Clear Rejections
 
-可以拒绝明显属于以下类型的职位：
+Jobs that clearly belong to the following types may be rejected:
 
 - Retail / Food Service
 - Warehouse / Cleaning / Security
 - Trades / Driving / Production Operations
 - Clinical Healthcare
-- 纯 Sales / Account Executive / Business Development
+- Pure Sales / Account Executive / Business Development
 - HR / Recruiting
 - Legal
 - Accounting / Bookkeeping / Tax
-- 普通 Software Development
+- General Software Development
 - DevOps / IT Support / Systems Administration
-- 普通 QA Testing
+- General QA Testing
 - Marketing Execution / Design / Creative / Content
-- 小时制或 task-paid AI training gigs
+- Hourly or task-paid AI training gigs
 
-但是，如果上述 title 明确包含 ML、AI、Data Platform、Analytics 等强数据属性，则不要仅因为岗位大类而拒绝。
+However, if a title of the above types explicitly contains strong data attributes such as ML, AI, Data Platform, or Analytics, do not reject it merely because of its broad job category.
 
-French-primary title 可直接拒绝。
+French-primary titles may be rejected directly.
 
-## 输入
+## Input
 
-接收一个或一批职位。批量处理时，每个职位只有：
+Receives one job or a batch of jobs. In batch processing, each job has only:
 
 ```json
 {
@@ -61,9 +61,9 @@ French-primary title 可直接拒绝。
 }
 ```
 
-## 输出
+## Output
 
-完整批次严格返回一次分类分区，不需要 reason：
+For the complete batch, strictly return a single classification partition; no reason is needed:
 
 ```json
 {
@@ -72,11 +72,11 @@ French-primary title 可直接拒绝。
 }
 ```
 
-要求：
+Requirements:
 
-- 必须覆盖输入的全部 `source_key`
-- `accepted_ids` 与 `rejected_ids` 不得重叠、不得重复
-- 不得包含未知 ID
-- 不输出其他字段
-- 不输出 Markdown
-- 不补充解释文字
+- Must cover all input `source_key` values
+- `accepted_ids` and `rejected_ids` must not overlap and must not contain duplicates
+- Must not contain unknown IDs
+- Do not output any other fields
+- Do not output Markdown
+- Do not add explanatory text

@@ -423,8 +423,8 @@ def _agent_command(claude_bin: str, model: str | None, agent: str) -> list[str]:
 def build_prompt(job: dict) -> str:
     payload = {field: job[field] for field in WORKER_FIELDS}
     return single_turn.wrap_job(
-        "请严格按照 instructions/resume_v1.md，为下面这 1 个职位生成 Resume V1。"
-        '只返回 1 个 JSON object：{"resume_v1": "..."}，不要输出任何其他内容。', payload)
+        "Generate Resume V1 for the 1 job below, strictly following instructions/resume_v1.md. "
+        'Return only 1 JSON object: {"resume_v1": "..."} and nothing else.', payload)
 
 
 def parse_worker_output(stdout: str) -> dict:

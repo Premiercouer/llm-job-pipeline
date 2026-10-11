@@ -220,7 +220,7 @@ def main():
     handoff_path = OUTPUT_ROOT / f"{day}_{datetime.now():%H%M}_jobs.json"
     core.write_json_atomic(handoff_path, {"date": day, "job_count": len(handoff), "jobs": handoff})
 
-    print("Job Screening 完成\n")
+    print("Job Screening complete\n")
     print(f"Total: {len(unique)}  (screened {len(jobs)}, duplicates removed {len(jobs) - len(unique)})")
     print(f"ACCEPT: {counts['ACCEPT']}")
     print(f"REJECT: {counts['REJECT']}")

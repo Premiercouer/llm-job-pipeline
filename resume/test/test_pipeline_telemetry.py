@@ -41,8 +41,6 @@ prompt = sys.stdin.read()
 if os.environ.get("FAKE_MODE") == "sleep":
     time.sleep(5)
 fx = os.environ.get("FAKE_FIXTURE")
-if "（PREPARE 阶段）" in prompt: fx = os.environ.get("FAKE_PREPARE", fx)
-if "（SCAN 阶段）" in prompt: fx = os.environ.get("FAKE_SCAN", fx)
 sys.stdout.write(open(fx, encoding="utf-8").read() if fx else "")
 sys.exit(int(os.environ.get("FAKE_RC", "0")))
 """, encoding="utf-8")
@@ -112,7 +110,7 @@ def fixture(obj) -> str:
 
 
 def fake_env(**e):
-    for k in ("FAKE_FIXTURE", "FAKE_RC", "FAKE_MODE", "FAKE_PREPARE", "FAKE_SCAN"):
+    for k in ("FAKE_FIXTURE", "FAKE_RC", "FAKE_MODE"):
         os.environ.pop(k, None)
     os.environ.update({k: str(v) for k, v in e.items()})
 

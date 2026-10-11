@@ -1,28 +1,28 @@
 # Ashby Job Pipeline
 
-Stage 01 读取 `config/ashby_board_pool.json`，不扫描或修改 Master、Excluded、Indeterminate 数据。
+Stage 01 reads `config/ashby_board_pool.json`; it does not scan or modify the Master, Excluded, or Indeterminate data.
 
-Prepare：
+Prepare:
 
 ```bash
 python3 scripts/01_search_jobs.py
 ```
 
-当前 Codex 会话只读取一次 `instructions/title_screening.md` 和
-`.runtime/01_title_screen_input.json`，将完整两分区结果写到
-`.runtime/01_title_screen_results.json`，然后执行：
+The current Codex session reads `instructions/title_screening.md` and
+`.runtime/01_title_screen_input.json` only once, writes the complete two-partition result to
+`.runtime/01_title_screen_results.json`, and then runs:
 
 ```bash
 python3 scripts/01_search_jobs.py --phase finalize --ai-invocations 1
 ```
 
-Title 筛选不在 Python 中使用关键词，不对 cheap filter 前的全部职位调用 AI。
-Title 结果不完整或最终输出验证失败时，finalize 必须失败且不得提交 seen state。
+Title screening does not use keywords in Python, and AI is not called on all jobs before the cheap filter.
+If the title results are incomplete or final output validation fails, finalize must fail and must not commit seen state.
 
-Production seen state 是 `.runtime/ashby_seen_jobs.json`，内部 identity 为
-`ashby:{board_slug}:{id}`。最终 Job Match 文件严格使用五字段 job schema，且其
-`source_key` 与 Greenhouse 一样等于 `apply_url`。
+The production seen state is `.runtime/ashby_seen_jobs.json`, with the internal identity
+`ashby:{board_slug}:{id}`. The final Job Match file strictly uses the five-field job schema, and its
+`source_key` equals `apply_url`, the same as Greenhouse.
 
-测试必须传 `--limit-boards`，自动切换到隔离的 test seen/checkpoint/artifact。
-测试可用 `--max-title-jobs 10` 限制真实 Title 样本；被截断的 eligible jobs 不会写 seen。
-测试后不得自动执行 297 Boards production run。
+Tests must pass `--limit-boards`, which automatically switches to an isolated test seen/checkpoint/artifact.
+Tests may use `--max-title-jobs 10` to limit the real title sample; truncated eligible jobs are not written to seen.
+Do not automatically run the 297-board production run after testing.

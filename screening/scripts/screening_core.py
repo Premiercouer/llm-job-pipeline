@@ -372,8 +372,8 @@ def worker_input(job):
 
 def build_prompt(job):
     return (
-        "请严格按照 instructions/screen_job.md 筛选下面这 1 个 normalized job，"
-        "只返回 1 个 ScreeningResult JSON object，不要输出任何其他内容。\n\n"
+        "Screen the 1 normalized job below strictly according to instructions/screen_job.md. "
+        "Return only 1 ScreeningResult JSON object and nothing else.\n\n"
         + json.dumps(worker_input(job), ensure_ascii=False, indent=2)
     )
 
@@ -396,7 +396,8 @@ RULES_FILE = ROOT / "instructions/screen_job.md"
 PROFILE_FILE = paths.CANDIDATE_DIR / "capability_profile.md"
 AGENT_FILE = ROOT / ".claude/agents" / f"{AGENT}.md"
 SINGLE_TURN_ROLE_FILE = ROOT / "instructions/single_turn_worker.md"
-SINGLE_TURN_INSTRUCTION = "请按 SCREENING_RULES 筛选下面这 1 个 normalized job，只返回 1 个 ScreeningResult JSON object。"
+SINGLE_TURN_INSTRUCTION = ("Screen the 1 normalized job below according to SCREENING_RULES. "
+                           "Return only 1 ScreeningResult JSON object.")
 # Run from an empty dir outside the project with CLAUDE.md discovery and auto-memory off,
 # so the request carries only the system prompt + the job.
 SINGLE_TURN_ENV = {"CLAUDE_CODE_DISABLE_CLAUDE_MDS": "1", "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1"}

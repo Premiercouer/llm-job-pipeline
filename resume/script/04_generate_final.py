@@ -503,16 +503,16 @@ def call_worker(cmd: list[str], prompt: str, timeout: int, tele=None) -> dict:
 def v2_prompt(job: dict) -> str:
     payload = {k: job[k] for k in ("company", "position", "jd", "resume_v1", "quality_feedback")}
     return p02.single_turn.wrap_job(
-        "请严格按照 instructions/resume_v2.md，为下面这 1 个职位生成 Resume V2。"
-        "只返回 Output Contract 定义的 1 个 JSON object（不要外层包装），不要输出任何其他内容。", payload)
+        "Generate Resume V2 for the 1 job below, strictly following instructions/resume_v2.md. "
+        "Return only the 1 JSON object defined by the Output Contract (no outer wrapper) and nothing else.", payload)
 
 
 def trim_prompt(resume: dict, quality_feedback: dict, validation: dict) -> str:
     payload = {"resume_v2": resume, "quality_feedback": quality_feedback, "pdf_validation": validation}
     return p02.single_turn.wrap_job(
-        "Python 已实际渲染并确认当前 Resume 的 PDF 超过一页。请严格按照 instructions/resume_trim.md "
-        "执行一次 trim pass，只返回完整的 trimmed Resume JSON object（与输入 resume_v2 相同 schema，"
-        "不要外层包装），不要输出任何其他内容。", payload)
+        "Python has rendered the current resume and confirmed that the PDF is longer than one page. "
+        "Run one trim pass strictly following instructions/resume_trim.md. Return only the complete "
+        "trimmed resume JSON object (same schema as the input resume_v2, no outer wrapper) and nothing else.", payload)
 
 
 # ------------------------------------------------------------------- jobs
