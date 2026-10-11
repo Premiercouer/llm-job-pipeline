@@ -26,7 +26,7 @@ from pathlib import Path
 
 SCHEMA_VERSION = 1
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))  # repository root
-from common import paths  # noqa: E402
+from common import paths, pseudonym  # noqa: E402
 
 DEFAULT_PATH = paths.data_dir("resume", ".runtime", "telemetry", "worker_usage.jsonl")
 
@@ -161,7 +161,7 @@ class Invocation:
             "pid": os.getpid(),
             "stage": stage,
             "batch": batch,
-            "job_folder": job_folder,
+            "job_run_id": pseudonym.job_run_id(batch, job_folder),  # never the folder name
             "attempt": attempt,
             "trim_iteration": trim_iteration,
             "model_requested": model_requested(cmd),

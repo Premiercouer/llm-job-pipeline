@@ -286,7 +286,18 @@ class ReviewEngine:
                        report, reconciled)
         self.hook("after_sink_commit", job.job_id)
         journal.transition(S.COMMITTED, "")
+        self._release(journal)
         return res(COMMITTED, journal, "", report, reconciled)
+
+    def _release(self, journal: Journal) -> None:
+        """Optional provider hook after COMMITTED: drop provider-side copies of the inputs.
+        Best effort; a failure never undoes the commit."""
+        release = getattr(self.scorer, "release", None)
+        if release is not None and journal.data.get("receipt"):
+            try:
+                release(SubmissionReceipt.from_dict(journal.data["receipt"]))
+            except Exception:  # noqa: BLE001
+                pass
 
     def _reconcile_committed(self, job, journal: Journal, res) -> ReviewResult:
         report = QualityReport.from_dict(journal.data["report"])

@@ -21,7 +21,6 @@ import re
 import shutil
 import subprocess
 import sys
-import tempfile
 import threading
 import unicodedata
 from collections import Counter
@@ -29,7 +28,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent  # screening/: rules, prompts, agent definition
 sys.path.insert(0, str(ROOT.parent))  # repository root
-from common import paths  # noqa: E402
+from common import paths, run_dirs  # noqa: E402
 
 DATA_ROOT = paths.data_dir("screening")  # batches, checkpoints, runtime, handoff output
 BATCH_ROOT = DATA_ROOT / "input_batches"
@@ -428,12 +427,12 @@ def display_path(path):
     return str(path)
 
 
-def make_agent_run_dir():
+def make_agent_run_dir(run_dir):
     """agent mode: the worker Reads `instructions/screen_job.md` and `candidate_capability_profile.md`
     relative to its cwd and loads `.claude/agents/job-screener.md`; stage exact copies in an empty temp
     dir so the candidate profile can live outside the repository (source hashes are still checked
     against the originals)."""
-    run_dir = Path(tempfile.mkdtemp(prefix="job_match_agent_"))
+    run_dir = Path(run_dir)
     (run_dir / "instructions").mkdir()
     (run_dir / ".claude" / "agents").mkdir(parents=True)
     shutil.copyfile(RULES_FILE, run_dir / "instructions" / "screen_job.md")
@@ -467,7 +466,9 @@ def embedded_source_hashes(system_prompt):
             "candidate_profile_sha256": sha256_text(profile.group(1)) if profile else None}
 
 
-def single_turn_command(claude_bin, system_prompt, model=None):
+def single_turn_command(claude_bin, system_prompt_file, model=None):
+    """The system prompt (rules + full candidate profile) goes in a 0600 file, never on the
+    command line, so it does not show up in process listings or crash diagnostics."""
     cmd = [
         claude_bin, "-p",
         "--output-format", "json",
@@ -476,7 +477,7 @@ def single_turn_command(claude_bin, system_prompt, model=None):
         "--disable-slash-commands",
         "--tools", "",                   # no tools at all
         "--permission-mode", "dontAsk",
-        "--system-prompt", system_prompt,
+        "--system-prompt-file", str(system_prompt_file),
     ]
     if model:
         cmd += ["--model", model]
@@ -542,21 +543,27 @@ class Worker:
         self.sources = source_hashes()
         self.budget = Budget(budget_usd, mode) if budget_usd is not None else None
         self.models_seen = set()
-        self.prefix_tokens = None  # single-turn: cached system-prompt prefix, fixed once first seen
+        self.prefix_tokens = None  # single-turn: smallest cached prefix seen (= the system prompt)
+        self.prefix_slack = 0      # largest job-prompt bound seen (a repeat may cache that much more)
         self._lock = threading.Lock()
-        self.cwd = None
+        self.cwd = self.run_dir = self.system_prompt_file = None
         if mode == WORKER_SINGLE_TURN:
             self.system_prompt = build_single_turn_system_prompt()
             self.system_prompt_sha256 = sha256_text(self.system_prompt)
             if embedded_source_hashes(self.system_prompt) != self.sources:
                 raise GlobalFatalError("single-turn system prompt does not embed the current source files")
-            self.cmd = single_turn_command(claude_bin, self.system_prompt, model)
-            self.cwd = tempfile.mkdtemp(prefix="job_match_single_turn_")
+            self.run_dir = run_dirs.new_run_dir("screening")
+            self.system_prompt_file = self.run_dir / "system_prompt.md"
+            run_dirs.write_private(self.system_prompt_file, self.system_prompt)
+            self.cwd = str(self.run_dir / "cwd")
+            os.mkdir(self.cwd, 0o700)  # empty: the worker sees no files at all
+            self.cmd = single_turn_command(claude_bin, self.system_prompt_file, model)
             self.env_extra = dict(SINGLE_TURN_ENV)
         else:
             self.system_prompt = self.system_prompt_sha256 = None
             self.cmd = worker_command(claude_bin, model)
-            self.cwd = make_agent_run_dir()
+            self.run_dir = run_dirs.new_run_dir("screening-agent")
+            self.cwd = make_agent_run_dir(self.run_dir)
             self.env_extra = {}
 
     def __enter__(self):
@@ -566,9 +573,9 @@ class Worker:
         self.close()
 
     def close(self):
-        if self.cwd:
-            shutil.rmtree(self.cwd, ignore_errors=True)
-            self.cwd = None
+        if self.run_dir:
+            run_dirs.remove(self.run_dir)
+            self.run_dir = self.cwd = None
 
     def run_cwd(self):
         return self.cwd
@@ -595,7 +602,12 @@ class Worker:
         """single-turn, before launch: prompt hash / embedded sources / user prompt shape. Fatal if off."""
         if self.mode != WORKER_SINGLE_TURN:
             return
-        if self.cmd[self.cmd.index("--system-prompt") + 1] != self.system_prompt \
+        try:
+            on_disk = self.system_prompt_file.read_text(encoding="utf-8")
+        except OSError:
+            on_disk = None
+        if self.cmd[self.cmd.index("--system-prompt-file") + 1] != str(self.system_prompt_file) \
+                or on_disk is None or sha256_text(on_disk) != self.system_prompt_sha256 \
                 or sha256_text(self.system_prompt) != self.system_prompt_sha256:
             raise GlobalFatalError("single-turn system prompt hash changed during the run")
         if source_hashes() != self.sources:
@@ -663,17 +675,26 @@ class Worker:
         return u
 
     def _context_problems(self, u, prompt):
-        """Unexpected context: cached prefix must be the system prompt alone (constant across the run);
-        the uncached part must be explainable by this job's user prompt. Caller holds self._lock."""
+        """Unexpected context: the cached prefix must be the system prompt, plus at most this job's
+        own prompt (an identical request repeated within the cache TTL, e.g. a retry, also reads
+        its job text from cache); the uncached part must be explainable by this job's user prompt.
+        The run's system-prompt prefix is the smallest cache read seen. Caller holds self._lock."""
         sys_cap = SYSTEM_TOKENS_PER_CHAR * len(self.system_prompt) + SYSTEM_TOKENS_MARGIN
         job_cap = JOB_TOKENS_PER_CHAR * len(prompt) + JOB_TOKENS_MARGIN
         inp, cw, cr = u["input_tokens"], u["cache_creation_input_tokens"], u["cache_read_input_tokens"]
         if cr:
-            if cr > sys_cap:
-                return [f"cached prefix {cr} tokens > system prompt bound {sys_cap:.0f}"]
-            if self.prefix_tokens is not None and cr != self.prefix_tokens:
-                return [f"cached prefix {cr} tokens differs from this run's {self.prefix_tokens}"]
-            self.prefix_tokens = cr
+            if cr > sys_cap + job_cap:
+                return [f"cached prefix {cr} tokens > system prompt + job bound {sys_cap + job_cap:.0f}"]
+            if self.prefix_tokens is not None:
+                if cr - self.prefix_tokens > job_cap:
+                    return [f"cached prefix {cr} tokens exceeds this run's {self.prefix_tokens} by more "
+                            f"than this job's prompt ({job_cap:.0f})"]
+                if self.prefix_tokens - cr > self.prefix_slack:
+                    return [f"cached prefix {cr} tokens is smaller than this run's {self.prefix_tokens} by "
+                            f"more than a job prompt ({self.prefix_slack:.0f})"]
+            if self.prefix_tokens is None or cr < self.prefix_tokens:
+                self.prefix_tokens = cr      # smaller read = closer to the bare system prompt
+            self.prefix_slack = max(getattr(self, "prefix_slack", 0), job_cap)
             uncached = inp + cw
         elif self.prefix_tokens is not None:  # cache expired mid-run: prefix re-written
             uncached = inp + cw - self.prefix_tokens

@@ -18,7 +18,7 @@ and never writes job.json or the tracker. An existing valid cover_letter.pdf is 
 Usage:
     python3 script/generate_cover_letter.py --job-dir "/abs/jobs/<batch>/<job_folder>"
     python3 script/generate_cover_letter.py --job-dir ... --force          # regenerate
-    python3 script/generate_cover_letter.py --job-dir ... --no-research    # no web search
+    python3 script/generate_cover_letter.py --job-dir ... --research       # allow WebSearch (off by default)
     python3 script/generate_cover_letter.py --job-dir ... --dry-run        # print worker input
 
 Output protocol (line-buffered):
@@ -166,11 +166,11 @@ def worker_input(job: dict, allow_research: bool, today: date | None = None) -> 
 
 
 def build_prompt(payload: dict) -> str:
-    return ("请严格按照 instructions/cover_letter.md 和 cover-letter-worker 的 Execution Contract，"
-            "为下面这 1 个职位生成 Cover Letter 正文。只返回 1 个 JSON object："
-            '{"paragraphs": {"opening": "...", "technical_fit": "...", "company_fit": "...", '
-            '"closing": "..."}}（paragraphs 是 object，不是 array），不要输出任何其他内容。\n\n'
-            + json.dumps(payload, ensure_ascii=False, indent=2))
+    return p02.single_turn.wrap_job(
+        "请严格按照 instructions/cover_letter.md 和 cover-letter-worker 的 Execution Contract，"
+        "为下面这 1 个职位生成 Cover Letter 正文。只返回 1 个 JSON object："
+        '{"paragraphs": {"opening": "...", "technical_fit": "...", "company_fit": "...", '
+        '"closing": "..."}}（paragraphs 是 object，不是 array），不要输出任何其他内容。', payload)
 
 
 # --------------------------------------------------------------- validation
@@ -219,9 +219,15 @@ def validate_cover_letter(obj, edu_status: list[dict] | None = None) -> str | No
 
 # ------------------------------------------------------------------ worker
 
-def worker_command(claude_bin: str, model: str | None, allow_research: bool) -> list[str]:
-    """Same isolation as 04's workers (no MCP => no Browser Lab Chrome); web tools only if allowed."""
-    tools = "Read,WebSearch,WebFetch" if allow_research else "Read"
+def worker_command(claude_bin: str, model: str | None, allow_research: bool,
+                   mode: str | None = None) -> list[str]:
+    """single-turn (default): rules in a system-prompt file, no Read, no WebFetch; WebSearch only
+    when research is explicitly allowed. The JD is untrusted, so no tool may fetch an arbitrary
+    URL (a URL can carry data out). agent mode (rollback) keeps Read for the rule file."""
+    if p02.resolve_worker_mode(mode) == p02.WORKER_SINGLE_TURN:
+        return p02.worker_command(claude_bin, model, agent=AGENT, mode=mode,
+                                  tools="WebSearch" if allow_research else "")
+    tools = "Read,WebSearch" if allow_research else "Read"
     cmd = [claude_bin, "-p",
            "--agent", AGENT,
            "--output-format", "json",
@@ -241,7 +247,8 @@ def generate_paragraphs(payload: dict, cmd: list[str], timeout: int, label: str)
     for attempt in range(1, MAX_ATTEMPTS + 1):
         try:
             obj = p04.call_worker(cmd, build_prompt(payload), timeout)
-            err = validate_cover_letter(obj, payload["candidate"].get("education_status"))
+            err = (validate_cover_letter(obj, payload["candidate"].get("education_status"))
+                   or p02.output_guard.check(obj, payload.get("job", {}).get("jd", "")))
             if err:
                 raise p04.JobError(f"invalid cover letter: {err}")
             return obj["paragraphs"]
@@ -340,7 +347,7 @@ def run(args) -> tuple[str, str, int]:
     job = load_job(job_dir)
     label = f"{job['company']} — {job['position']}"
     pdf_path = job_dir / PDF_NAME
-    payload = worker_input(job, not args.no_research)
+    payload = worker_input(job, args.research)
     prefix = template_prefix()  # fail before any worker if the reference changed
 
     if args.dry_run:
@@ -362,9 +369,9 @@ def run(args) -> tuple[str, str, int]:
         if not args.force and pdf_path.is_file() and p04.pdf_page_count(pdf_path):
             return "SKIPPED", f"{label} | existing {pdf_path} (finished by another run)", 0
         chrome = p04.find_chrome()
-        cmd = worker_command(p02.find_claude(), args.model, not args.no_research)
+        cmd = worker_command(p02.find_claude(), args.model, args.research, args.worker)
         log(f"Job: {job_dir}")
-        log(f"Generating cover letter for {label} | research: {not args.no_research} | "
+        log(f"Generating cover letter for {label} | research: {args.research} | "
             f"timeout {args.timeout}s x {MAX_ATTEMPTS} attempts")
         paragraphs = generate_paragraphs(payload, cmd, args.timeout, label)
         data = build_cover_letter_data(job, paragraphs, date.today())
@@ -381,7 +388,10 @@ def main() -> int:
     ap.add_argument("--job-dir", required=True, help="absolute path of one job folder (contains job.json)")
     ap.add_argument("--force", action="store_true",
                     help="regenerate and overwrite existing cover_letter.html / cover_letter.pdf")
-    ap.add_argument("--no-research", action="store_true", help="disallow company web research")
+    ap.add_argument("--research", action="store_true",
+                    help="allow company research with WebSearch (off by default; never WebFetch)")
+    ap.add_argument("--worker", choices=p02.WORKER_MODES,
+                    help=f"worker mode (default: ${p02.WORKER_ENV} or single-turn)")
     ap.add_argument("--timeout", type=int, default=DEFAULT_TIMEOUT,
                     help=f"seconds per Claude attempt (default {DEFAULT_TIMEOUT})")
     ap.add_argument("--model", help="override worker model")

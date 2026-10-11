@@ -90,7 +90,7 @@ def per_job(stat: dict, jobs: int) -> dict:
 
 
 def job_key(r: dict) -> tuple:
-    return (r.get("batch"), r.get("job_folder"))
+    return (r.get("batch"), r.get("job_run_id") or r.get("job_folder"))  # job_folder: older events
 
 
 def summarize(rows: list[dict]) -> dict:

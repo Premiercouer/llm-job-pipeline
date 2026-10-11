@@ -301,6 +301,22 @@ class TestManualProvider(Base):
         report.write_text(json.dumps({"score": 70, "matched_skills": ["Python"], "missing_keywords": ["dbt"]}))
         r = self.engine(scorer).review(self.job)
         self.assertEqual((r.outcome, r.report.score), (COMMITTED, 70))
+        self.assertEqual(list((self.dir / "inbox").iterdir()), [])  # plain-text copies released
+
+    def test_manual_inbox_must_be_private(self):
+        inbox = self.dir / "shared"
+        inbox.mkdir(mode=0o755)
+        os.chmod(inbox, 0o755)
+        with self.assertRaises(PermissionError):
+            ManualFileScorer(inbox)
+
+    def test_manual_files_are_owner_only_and_purged(self):
+        scorer = ManualFileScorer(self.dir / "inbox")
+        self.engine(scorer, max_polls=1).review(self.job)
+        (req,) = (self.dir / "inbox").glob("*.request.json")
+        self.assertEqual(os.stat(req).st_mode & 0o077, 0)
+        os.utime(req, (0, 0))
+        self.assertEqual(scorer.purge_older_than(3600), [req])
 
 
 class TestFaultSchedules(unittest.TestCase):

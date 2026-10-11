@@ -449,30 +449,18 @@ def build_pdf_validation(pages: list[list[str]], trim_iteration: int) -> dict:
 
 # ------------------------------------------------------------------ claude
 
-def worker_command(agent: str, claude_bin: str, model: str | None) -> list[str]:
-    cmd = [claude_bin, "-p",
-           "--agent", agent,
-           "--output-format", "json",
-           "--no-session-persistence",
-           "--strict-mcp-config",       # no MCP / browser
-           "--disable-slash-commands",
-           "--tools", "Read",
-           "--allowedTools", "Read",
-           "--permission-mode", "dontAsk"]
-    if model:
-        cmd += ["--model", model]
-    return cmd
+def worker_command(agent: str, claude_bin: str, model: str | None, mode: str | None = None) -> list[str]:
+    """Same worker modes as 02 (single-turn default; agent = rollback)."""
+    return p02.worker_command(claude_bin, model, agent=agent, mode=mode)
 
 
 def call_worker(cmd: list[str], prompt: str, timeout: int, tele=None) -> dict:
     """One fresh worker. `tele` (pipeline_telemetry.Invocation, optional) only records counters;
     generate_cover_letter.py calls this without it."""
-    env = os.environ.copy()
-    env.pop("CLAUDECODE", None)
     t0 = time.monotonic()
     try:
         proc = subprocess.run(cmd, input=prompt, capture_output=True, text=True,
-                              cwd=p02.worker_cwd(), env=env, timeout=timeout)
+                              cwd=p02.run_cwd(cmd), env=p02.worker_env(cmd), timeout=timeout)
     except subprocess.TimeoutExpired:
         if tele:
             tele.cli("TIMEOUT", duration_s=time.monotonic() - t0, error_type="timeout")
@@ -499,6 +487,11 @@ def call_worker(cmd: list[str], prompt: str, timeout: int, tele=None) -> dict:
         if not detail:
             detail = ((proc.stderr or proc.stdout).strip().splitlines()[-1:] or ["no output"])[0]
         raise JobError(f"claude exited {proc.returncode}: {detail[:200]}")
+    violation = p02.single_turn.check_envelope(cmd, p02._envelope(proc.stdout))
+    if violation:
+        if tele:
+            tele.validation("INVALID", "single_turn_guardrail")
+        raise JobError(f"single-turn guardrail: {violation}")
     try:
         return p03.parse_response(proc.stdout)  # envelope + fenced/plain JSON object
     except p03.JobError as e:
@@ -509,17 +502,17 @@ def call_worker(cmd: list[str], prompt: str, timeout: int, tele=None) -> dict:
 
 def v2_prompt(job: dict) -> str:
     payload = {k: job[k] for k in ("company", "position", "jd", "resume_v1", "quality_feedback")}
-    return ("请严格按照 instructions/resume_v2.md，为下面这 1 个职位生成 Resume V2。"
-            "只返回 Output Contract 定义的 1 个 JSON object（不要外层包装），不要输出任何其他内容。\n\n"
-            + json.dumps(payload, ensure_ascii=False, indent=2))
+    return p02.single_turn.wrap_job(
+        "请严格按照 instructions/resume_v2.md，为下面这 1 个职位生成 Resume V2。"
+        "只返回 Output Contract 定义的 1 个 JSON object（不要外层包装），不要输出任何其他内容。", payload)
 
 
 def trim_prompt(resume: dict, quality_feedback: dict, validation: dict) -> str:
     payload = {"resume_v2": resume, "quality_feedback": quality_feedback, "pdf_validation": validation}
-    return ("Python 已实际渲染并确认当前 Resume 的 PDF 超过一页。请严格按照 instructions/resume_trim.md "
-            "执行一次 trim pass，只返回完整的 trimmed Resume JSON object（与输入 resume_v2 相同 schema，"
-            "不要外层包装），不要输出任何其他内容。\n\n"
-            + json.dumps(payload, ensure_ascii=False, indent=2))
+    return p02.single_turn.wrap_job(
+        "Python 已实际渲染并确认当前 Resume 的 PDF 超过一页。请严格按照 instructions/resume_trim.md "
+        "执行一次 trim pass，只返回完整的 trimmed Resume JSON object（与输入 resume_v2 相同 schema，"
+        "不要外层包装），不要输出任何其他内容。", payload)
 
 
 # ------------------------------------------------------------------- jobs
@@ -831,6 +824,10 @@ def generate_v2(job: Job, ctx: dict) -> dict:
             if err:
                 tele.validation("INVALID", "validation")
                 raise JobError(f"invalid Resume V2: {err}")
+            leak = p02.output_guard.check(resume, job.data["jd"])
+            if leak:
+                tele.validation("INVALID", "output_guard")
+                raise JobError(f"output guard: {leak}")
             tele.validation("VALID")
             return resume
         except JobError as e:
@@ -856,6 +853,10 @@ def trim_once(job: Job, ctx: dict, resume: dict, validation: dict) -> dict:
             if err:
                 tele.validation("INVALID", "validation")
                 raise JobError(err)
+            leak = p02.output_guard.check(trimmed, job.data["jd"])
+            if leak:
+                tele.validation("INVALID", "output_guard")
+                raise JobError(f"output guard: {leak}")
             tele.validation("VALID")
             return trimmed
         except JobError as e:
@@ -963,8 +964,8 @@ def run(args, stats: dict) -> int:
     ctx = {"tracker": tracker, "batch": batch, "timeout": args.timeout, "prefix": prefix,
            "max_trims": args.max_trim_iterations,
            "chrome": find_chrome() if to_run else None,
-           "v2_cmd": worker_command(V2_AGENT, claude, args.model) if to_run else None,
-           "trim_cmd": worker_command(TRIM_AGENT, claude, args.model) if to_run else None}
+           "v2_cmd": worker_command(V2_AGENT, claude, args.model, args.worker) if to_run else None,
+           "trim_cmd": worker_command(TRIM_AGENT, claude, args.model, args.worker) if to_run else None}
     total = len(checkpoints) + len(to_run)
 
     def progress():
@@ -1015,6 +1016,8 @@ def main() -> int:
     ap.add_argument("--timeout", type=int, default=DEFAULT_TIMEOUT,
                     help=f"seconds per Claude attempt (default {DEFAULT_TIMEOUT})")
     ap.add_argument("--model", help="override worker model")
+    ap.add_argument("--worker", choices=p02.WORKER_MODES,
+                    help=f"worker mode (default: ${p02.WORKER_ENV} or single-turn; agent = rollback)")
     ap.add_argument("--force", action="store_true", help="regenerate Resume V2 even if a valid one exists")
     ap.add_argument("--dry-run", action="store_true",
                     help="validate and plan only; no Claude, no rendering, no writes")

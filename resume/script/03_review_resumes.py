@@ -19,7 +19,8 @@ stage 4 refuses that batch until stage 3 is rerun after the operator acted.
 
 No Claude worker: stage 3 makes 0 model calls. Per-job journals:
 <workspace>/resume/.runtime/review_journal/<batch>/<job_folder>.json. Operational events:
-<workspace>/resume/.runtime/telemetry/review_events.jsonl (counters and states only).
+<workspace>/resume/.runtime/telemetry/review_events.jsonl (counters and states only; jobs are
+identified by a salted pseudonymous job_run_id, never by folder / company / position).
 
 Tracker columns owned by this stage: review_status, hard_missing, soft_missing, last_error,
 updated_at.
@@ -71,6 +72,7 @@ p01 = p02.p01
 from scoring import engine as review  # noqa: E402  (repository root is on sys.path via 02)
 from scoring.models import QualityReport, ResumeDocument, ReviewJob  # noqa: E402
 from scoring.providers import load_provider  # noqa: E402
+from common import pseudonym  # noqa: E402
 
 ROOT = p02.ROOT
 DEFAULT_JOBS_ROOT = p02.DEFAULT_JOBS_ROOT
@@ -467,7 +469,7 @@ def run(args) -> int:
     for i, j in enumerate(todo, 1):
         t0 = time.monotonic()
         r = engine.review(ReviewJob(j.folder, ResumeDocument(j.data["resume_v1"]), j.data["jd"], j.label))
-        append_event({"schema": 1, "ts": time.time(), "batch": batch, "job_folder": j.folder,
+        append_event({"schema": 1, "ts": time.time(), "batch": batch, "job_run_id": pseudonym.job_run_id(batch, j.folder),
                       "provider": getattr(scorer, "name", "?"), "outcome": r.outcome, "state": r.state,
                       "reconciled": r.reconciled, "duration_ms": round((time.monotonic() - t0) * 1000),
                       **{f"{k}_calls": v for k, v in r.calls.items()}})

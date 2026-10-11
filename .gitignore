@@ -48,5 +48,4 @@ transcript*
 *.pdf
 *.docx
 !examples/**/*.pdf
-_quarantine/
 workspace/

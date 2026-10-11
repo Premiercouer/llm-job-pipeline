@@ -33,7 +33,7 @@ from datetime import datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))  # repository root
-from common import candidate, paths, worker_dir  # noqa: E402
+from common import candidate, paths, pseudonym, worker_dir  # noqa: E402
 
 DATA_ROOT = paths.data_dir("resume")  # job folders, tracker, handoffs, telemetry, queue
 DEFAULT_INPUT_DIR = paths.data_dir("screening", "output")  # screening handoff (*_jobs.json)

@@ -50,7 +50,7 @@ if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 import pipeline_telemetry as telemetry  # noqa: E402  (worker usage JSONL; never fails a stage)
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))  # repository root
-from common import candidate, paths, worker_dir  # noqa: E402
+from common import candidate, output_guard, paths, pseudonym, single_turn, worker_dir  # noqa: E402
 DATA_ROOT = paths.data_dir("resume")
 DEFAULT_JOBS_ROOT = DATA_ROOT / "jobs"
 HANDOFF_ROOT = DATA_ROOT / ".runtime" / "handoff"
@@ -355,10 +355,58 @@ def find_claude() -> str:
     raise PipelineError("Claude Code CLI not found; set CLAUDE_BIN to its path")
 
 
-def worker_command(claude_bin: str, model: str | None = None) -> list[str]:
+WORKER_SINGLE_TURN, WORKER_AGENT = "single-turn", "agent"
+WORKER_MODES = (WORKER_SINGLE_TURN, WORKER_AGENT)
+WORKER_ENV = "LJP_RESUME_WORKER"  # default mode for 02 / 04 / cover letter when --worker is not given
+# agent -> (rule file, needs candidate knowledge). trim and cover letter never see the knowledge files.
+WORKER_RULES = {"resume-v1-worker": ("resume_v1.md", True), "resume-v2-worker": ("resume_v2.md", True),
+                "resume-trim-worker": ("resume_trim.md", False),
+                "cover-letter-worker": ("cover_letter.md", False)}
+
+
+def resolve_worker_mode(cli_value: str | None = None) -> str:
+    mode = cli_value or os.environ.get(WORKER_ENV) or WORKER_SINGLE_TURN
+    if mode not in WORKER_MODES:
+        raise PipelineError(f"unknown worker mode {mode!r} (choose from {', '.join(WORKER_MODES)})")
+    return mode
+
+
+@functools.lru_cache(maxsize=1)
+def prompt_files() -> "single_turn.PromptFiles":
+    """Private run dir with one system-prompt file per worker kind and an empty cwd."""
+    return single_turn.PromptFiles("resume")
+
+
+def worker_command(claude_bin: str, model: str | None = None, agent: str = AGENT,
+                   mode: str | None = None, tools: str = "") -> list[str]:
+    """single-turn (default): no tools, rules (+ knowledge for V1 / V2) in a system-prompt file.
+    agent (rollback): `claude -p --agent <agent>` reading its files with Read from a staged cwd."""
+    if resolve_worker_mode(mode) == WORKER_SINGLE_TURN:
+        rule_file, with_knowledge = WORKER_RULES[agent]
+        if with_knowledge:
+            candidate.load()  # fail fast on a malformed candidate.json / missing knowledge file
+        path = prompt_files().file_for(agent, lambda: single_turn.build_system_prompt(
+            ROOT, agent, rule_file, with_knowledge))
+        return single_turn.command(claude_bin, path, model, tools)
+    return _agent_command(claude_bin, model, agent)
+
+
+def run_cwd(cmd: list[str]) -> Path:
+    return prompt_files().cwd if single_turn.is_single_turn(cmd) else worker_cwd()
+
+
+def worker_env(cmd: list[str]) -> dict:
+    env = os.environ.copy()
+    env.pop("CLAUDECODE", None)  # allow launching from inside a Claude Code terminal
+    if single_turn.is_single_turn(cmd):
+        env.update(single_turn.ENV)
+    return env
+
+
+def _agent_command(claude_bin: str, model: str | None, agent: str) -> list[str]:
     cmd = [
         claude_bin, "-p",
-        "--agent", AGENT,
+        "--agent", agent,
         "--output-format", "json",       # envelope with is_error + result text
         "--no-session-persistence",      # nothing saved, nothing resumable
         "--strict-mcp-config",           # no MCP servers in the worker
@@ -374,11 +422,9 @@ def worker_command(claude_bin: str, model: str | None = None) -> list[str]:
 
 def build_prompt(job: dict) -> str:
     payload = {field: job[field] for field in WORKER_FIELDS}
-    return (
+    return single_turn.wrap_job(
         "请严格按照 instructions/resume_v1.md，为下面这 1 个职位生成 Resume V1。"
-        '只返回 1 个 JSON object：{"resume_v1": "..."}，不要输出任何其他内容。\n\n'
-        + json.dumps(payload, ensure_ascii=False, indent=2)
-    )
+        '只返回 1 个 JSON object：{"resume_v1": "..."}，不要输出任何其他内容。', payload)
 
 
 def parse_worker_output(stdout: str) -> dict:
@@ -417,12 +463,10 @@ def _envelope(stdout: str):
 
 def generate_once(job: dict, cmd: list[str], timeout: int, tele=None) -> str:
     """One fresh worker. `tele` (pipeline_telemetry.Invocation) only records counters."""
-    env = os.environ.copy()
-    env.pop("CLAUDECODE", None)  # allow launching from inside a Claude Code terminal
     t0 = time.monotonic()
     try:
         proc = subprocess.run(cmd, input=build_prompt(job), capture_output=True,
-                              text=True, cwd=worker_cwd(), env=env, timeout=timeout)
+                              text=True, cwd=run_cwd(cmd), env=worker_env(cmd), timeout=timeout)
     except subprocess.TimeoutExpired:
         if tele:
             tele.cli("TIMEOUT", duration_s=time.monotonic() - t0, error_type="timeout")
@@ -446,6 +490,11 @@ def generate_once(job: dict, cmd: list[str], timeout: int, tele=None) -> str:
             detail = ((proc.stderr or proc.stdout).strip().splitlines()[-1:]
                       or ["no output"])[0]
         raise JobError(f"claude exited {proc.returncode}: {detail[:200]}")
+    violation = single_turn.check_envelope(cmd, _envelope(proc.stdout))
+    if violation:
+        if tele:
+            tele.validation("INVALID", "single_turn_guardrail")
+        raise JobError(f"single-turn guardrail: {violation}")
     try:
         resume = parse_worker_output(proc.stdout)["resume_v1"]
     except JobError:
@@ -457,6 +506,11 @@ def generate_once(job: dict, cmd: list[str], timeout: int, tele=None) -> str:
         if tele:
             tele.validation("INVALID", "validation")
         raise JobError(err)
+    leak = output_guard.check(resume, job["jd"])
+    if leak:
+        if tele:
+            tele.validation("INVALID", "output_guard")
+        raise JobError(f"output guard: {leak}")
     if tele:
         tele.validation("VALID")
     return resume
@@ -619,7 +673,7 @@ def run(args, stats: dict) -> int:
         return 0
 
     ctx = {"tracker": tracker, "batch": batch, "timeout": args.timeout,
-           "cmd": worker_command(find_claude(), args.model) if to_run else None}
+           "cmd": worker_command(find_claude(), args.model, mode=args.worker) if to_run else None}
     total = len(checkpoints) + len(to_run)
 
     def progress():
@@ -670,6 +724,8 @@ def main() -> int:
     ap.add_argument("--timeout", type=int, default=DEFAULT_TIMEOUT,
                     help=f"seconds per Claude attempt (default {DEFAULT_TIMEOUT})")
     ap.add_argument("--model", help="override worker model (default: agent's 'inherit')")
+    ap.add_argument("--worker", choices=WORKER_MODES,
+                    help=f"worker mode (default: ${WORKER_ENV} or single-turn; agent = rollback)")
     ap.add_argument("--job", action="append", metavar="FOLDER",
                     help="only this job folder in the batch (repeatable)")
     ap.add_argument("--force", action="store_true",

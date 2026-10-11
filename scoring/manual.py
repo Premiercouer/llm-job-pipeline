@@ -10,10 +10,17 @@ collect() reads  <inbox>/<key>.report.json once the reviewer has written it, e.g
 
 Until then collect() raises ResultNotReady, so the run ends with PENDING_RESULT and the next
 run collects without resubmitting.
+
+Privacy: request files contain the full resume and JD in plain text. The inbox must be a
+private directory (created 0700; a group- or world-accessible inbox is refused), every file is
+written 0600, both files of a job are deleted once its report is committed (release()), and
+purge_older_than() removes abandoned requests. Never point the inbox at a synced or shared folder.
 """
 from __future__ import annotations
 
 import json
+import os
+import stat
 import time
 from pathlib import Path
 
@@ -27,6 +34,11 @@ class ManualFileScorer:
 
     def __init__(self, inbox: Path):
         self.inbox = Path(inbox)
+        self.inbox.mkdir(mode=0o700, parents=True, exist_ok=True)
+        mode = stat.S_IMODE(os.stat(self.inbox).st_mode)
+        if mode & (stat.S_IRWXG | stat.S_IRWXO):
+            raise PermissionError(f"inbox {self.inbox} is accessible to other users (mode {oct(mode)}); "
+                                  "chmod 700 it first")
 
     def _req(self, key: str) -> Path:
         return self.inbox / f"{key}.request.json"
@@ -47,6 +59,20 @@ class ManualFileScorer:
         if not path.exists():
             return None
         return SubmissionReceipt(**json.loads(path.read_text(encoding="utf-8"))["receipt"])
+
+    def release(self, receipt: SubmissionReceipt) -> None:
+        """Called by the engine after the report is committed: delete the plain-text copies."""
+        for suffix in ("request", "report"):
+            (self.inbox / f"{receipt.idempotency_key}.{suffix}.json").unlink(missing_ok=True)
+
+    def purge_older_than(self, seconds: float) -> list[Path]:
+        """Delete request / report files older than `seconds` (abandoned reviews)."""
+        cutoff, removed = time.time() - seconds, []
+        for path in self.inbox.glob("*.json"):
+            if path.stat().st_mtime < cutoff:
+                path.unlink(missing_ok=True)
+                removed.append(path)
+        return removed
 
     def collect(self, receipt: SubmissionReceipt) -> QualityReport:
         path = self.inbox / f"{receipt.idempotency_key}.report.json"

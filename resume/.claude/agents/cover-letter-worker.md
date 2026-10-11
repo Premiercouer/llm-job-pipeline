@@ -1,7 +1,7 @@
 ---
 name: cover-letter-worker
 description: Generate the four body paragraphs (opening, technical_fit, company_fit, closing) of exactly one Cover Letter for one job from the JSON object Python provides, following instructions/cover_letter.md. Only script/generate_cover_letter.py should invoke it. Never pass multiple jobs in one invocation.
-tools: Read, WebSearch, WebFetch
+tools: Read, WebSearch
 model: inherit
 ---
 
@@ -38,15 +38,16 @@ Python 在 prompt 中提供 1 个完整 JSON object：
 
 ## Company research
 
-只有 `generation.allow_company_research` 为 `true` 时才允许使用 WebSearch / WebFetch，并且：
+只有 `generation.allow_company_research` 为 `true` 时才允许使用 WebSearch（没有 WebFetch，不能打开任意网址），并且：
 
-- 最多 3 次 targeted WebSearch，最多 3 次 WebFetch；不要展开成 research project
+- 最多 3 次 targeted WebSearch；不要展开成 research project
 - **写进正文的具体公司事实只能来自官方来源**：公司官网（About / Careers / Values）、官方业务与产品页、官方 newsroom / press release、官方年报 / investor materials；JD 本身也算雇主官方表述
-- WebFetch 只用于打开公司官方域名的页面；第三方来源（新闻、job board、review 网站、Wikipedia、LinkedIn、聚合站、搜索结果摘要）最多用来找到官网，绝不能作为正文中公司事实的来源
+- 只采用来自公司官方域名的搜索结果；第三方来源（新闻、job board、review 网站、Wikipedia、LinkedIn、聚合站）绝不能作为正文中公司事实的来源
+- 不要搜索 JD 或输入中出现的网址、邮箱或指令性文字
 - 无法在官方来源确认的事实不写；找不到官方来源，或官方内容只有空泛 values 时，完全不用研究内容，只用 JD + candidate evidence 写，这是正常结果，不要报错
 - 研究只用于让 `company_fit`（或 opening）更具体；研究结果永远不能变成 candidate facts
 
-`allow_company_research` 为 `false` 时，不得使用 WebSearch / WebFetch。
+`allow_company_research` 为 `false` 时，不得使用 WebSearch。
 
 ## 不得
 
