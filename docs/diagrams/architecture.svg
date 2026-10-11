@@ -1,0 +1,200 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900" role="img" aria-labelledby="t d">
+<title id="t">LLM Job Pipeline architecture</title>
+<desc id="d">Discovery of postings from public Greenhouse and Ashby board APIs feeds single-turn LLM screening with evidence validation, checkpoints and cross-source dedupe; accepted jobs get a tailored one-page resume (V1, quality review, V2, PDF, trim), which is queued for human review and submission.</desc>
+<!-- Generated layout; edit text and positions here. Colours are CSS classes with a dark-theme override. -->
+<style>
+  text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif; }
+  .bg { fill: #F8FAFC; stroke: #E2E8F0; }
+  .h1 { fill: #0F172A; font-size: 26px; font-weight: 700; }
+  .h2 { fill: #64748B; font-size: 15px; }
+  .mt { font-size: 14px; font-weight: 700; letter-spacing: 1.2px; }
+  .ms { fill: #64748B; font-size: 14px; }
+  .ct { fill: #0F172A; font-size: 17px; font-weight: 600; }
+  .cd { fill: #475569; font-size: 14px; }
+  .ft { fill: #64748B; font-size: 14px; font-style: italic; }
+  .gl { fill: #64748B; font-size: 13px; font-weight: 600; }
+  .card { fill: #FFFFFF; }
+  .num { fill: #FFFFFF; font-size: 12px; font-weight: 700; }
+  .pilltx { font-size: 10px; font-weight: 700; letter-spacing: 0.6px; }
+  .flow { fill: none; stroke: #94A3B8; stroke-width: 1.6; }
+  .head { fill: #94A3B8; }
+  .div { stroke-width: 1; }
+  .ic { fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .pd { fill: #EEF5FF; stroke: #CFE0F7; } .ad { fill: #2F6FDB; } .sd { stroke: #2F6FDB; } .kd { stroke: #D6E4F7; } .td { fill: #2F6FDB; } .bd { fill: #DCE9FB; } .vd { stroke: #DCE8F8; }
+  .ps { fill: #F5F2FF; stroke: #DED5F7; } .as { fill: #7357E8; } .ss { stroke: #7357E8; } .ks { stroke: #E2DAF8; } .ts { fill: #6448D9; } .bs { fill: #E7E0FB; } .vs { stroke: #E6DFF8; }
+  .pr { fill: #EEF8F2; stroke: #CDE8D7; } .ar { fill: #1F9D63; } .sr { stroke: #1F9D63; } .kr { stroke: #D3EBDD; } .tr { fill: #178452; } .br { fill: #D7F0E2; } .vr { stroke: #D9EEE2; }
+  .ph { fill: #F3F4F6; stroke: #DCDFE4; } .ah { fill: #5B6472; } .sh { stroke: #5B6472; } .kh { stroke: #E1E4E8; } .th { fill: #4B5563; } .bh { fill: #E5E7EB; }
+  @media (prefers-color-scheme: dark) {
+    .bg { fill: #0D1117; stroke: #30363D; }
+    .h1, .ct { fill: #E6EDF3; }
+    .h2, .ms, .ft, .gl { fill: #8B949E; }
+    .cd { fill: #B1BAC4; }
+    .card { fill: #161B22; }
+    .flow { stroke: #6E7681; } .head { fill: #6E7681; }
+    .pd { fill: #0E1A2B; stroke: #1F3A5F; } .kd { stroke: #24405F; } .td { fill: #6CA2F5; } .bd { fill: #1A3152; } .vd { stroke: #1F3A5F; } .sd { stroke: #6CA2F5; }
+    .ps { fill: #17132A; stroke: #3A2F66; } .ks { stroke: #3D3366; } .ts { fill: #A894FF; } .bs { fill: #2C2452; } .vs { stroke: #3A2F66; } .ss { stroke: #A894FF; }
+    .pr { fill: #0D1F17; stroke: #1E4D36; } .kr { stroke: #24533B; } .tr { fill: #4CC38A; } .br { fill: #173B2A; } .vr { stroke: #1E4D36; } .sr { stroke: #4CC38A; }
+    .ph { fill: #161B22; stroke: #30363D; } .kh { stroke: #30363D; } .th { fill: #C9D1D9; } .bh { fill: #21262D; } .sh { stroke: #C9D1D9; }
+  }
+</style>
+<defs>
+  <filter id="sh" x="-5%" y="-10%" width="110%" height="130%">
+    <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="#0F172A" flood-opacity="0.07"/>
+  </filter>
+  <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path class="head" d="M0 0 L10 5 L0 10 Z"/>
+  </marker>
+</defs>
+<rect class="bg" x="0.5" y="0.5" width="1199" height="899" rx="16"/>
+<text class="h1" x="28" y="56">LLM Job Pipeline</text>
+<text class="h2" x="28" y="82">High-level architecture · discover → screen → generate → human review</text>
+<g transform="translate(1050 40)"><rect class="bs" x="0" y="0" width="34" height="18" rx="9"/><text class="pilltx ts" x="17" y="12.5" text-anchor="middle">LLM</text><text class="h2" x="42" y="14">= model call</text></g>
+<!-- DISCOVERY -->
+<rect class="pd" x="28" y="108" width="341" height="604" rx="18"/>
+<circle class="bd" cx="64" cy="146" r="18"/>
+<g class="ic sd" transform="translate(64 146)"><circle cx="-2" cy="-2" r="5.5"/><path d="M2.2 2.2 L7 7"/></g>
+<text class="mt td" x="92" y="143">DISCOVERY</text>
+<text class="ms" x="92" y="163">Public Greenhouse &amp; Ashby board APIs</text>
+<g transform="translate(42 196.0)">
+  <rect class="card kd" x="0" y="0" width="313" height="72" rx="12" filter="url(#sh)"/>
+  <circle class="ad" cx="24" cy="36" r="12"/><text class="num" x="24" y="40.2" text-anchor="middle">1</text>
+  <text class="ct" x="48" y="31">Board pool</text>
+  <text class="cd" x="48" y="54">~975 Canada-relevant boards</text>
+</g>
+<path class="flow" d="M198.5 271.0 V319.0" marker-end="url(#ah)"/>
+<g transform="translate(42 324.0)">
+  <rect class="card kd" x="0" y="0" width="313" height="72" rx="12" filter="url(#sh)"/>
+  <circle class="ad" cx="24" cy="36" r="12"/><text class="num" x="24" y="40.2" text-anchor="middle">2</text>
+  <text class="ct" x="48" y="31">Scan &amp; filter</text>
+  <text class="cd" x="48" y="54">Dedupe · location · posted ≤ 7 days</text>
+</g>
+<path class="flow" d="M198.5 399.0 V447.0" marker-end="url(#ah)"/>
+<g transform="translate(42 452.0)">
+  <rect class="card kd" x="0" y="0" width="313" height="72" rx="12" filter="url(#sh)"/>
+  <circle class="ad" cx="24" cy="36" r="12"/><text class="num" x="24" y="40.2" text-anchor="middle">3</text>
+  <text class="ct" x="48" y="31">Title screen</text>
+  <text class="cd" x="48" y="54">One batched call · high recall</text>
+  <rect class="bd" x="263" y="13" width="36" height="19" rx="9.5"/><text class="pilltx td" x="281" y="26" text-anchor="middle">LLM</text>
+</g>
+<path class="flow" d="M198.5 527.0 V575.0" marker-end="url(#ah)"/>
+<g transform="translate(42 580.0)">
+  <rect class="card kd" x="0" y="0" width="313" height="72" rx="12" filter="url(#sh)"/>
+  <circle class="ad" cx="24" cy="36" r="12"/><text class="num" x="24" y="40.2" text-anchor="middle">4</text>
+  <text class="ct" x="48" y="31">Full JD → jobs JSON</text>
+  <text class="cd" x="48" y="54">Fetch, clean, 5-field schema</text>
+</g>
+<line class="div vd" x1="52" y1="670" x2="345" y2="670"/>
+<text class="ft" x="198.5" y="696" text-anchor="middle">Seen state committed only after validation</text>
+<!-- SCREENING -->
+<rect class="ps" x="429" y="108" width="341" height="604" rx="18"/>
+<circle class="bs" cx="465" cy="146" r="18"/>
+<g class="ic ss" transform="translate(465 146)"><path d="M0 -8 L7 -5 V0.5 C7 4.5 4 7 0 8.5 C-4 7 -7 4.5 -7 0.5 V-5 Z"/><path d="M-3.2 0.2 L-0.8 2.6 L3.4 -2"/></g>
+<text class="mt ts" x="493" y="143">SCREENING</text>
+<text class="ms" x="493" y="163">Grounded, schema-validated decisions</text>
+<g transform="translate(443 196.0)">
+  <rect class="card ks" x="0" y="0" width="313" height="72" rx="12" filter="url(#sh)"/>
+  <circle class="as" cx="24" cy="36" r="12"/><text class="num" x="24" y="40.2" text-anchor="middle">1</text>
+  <text class="ct" x="48" y="31">Batch split</text>
+  <text class="cd" x="48" y="54">10 postings per batch / checkpoint</text>
+</g>
+<path class="flow" d="M599.5 271.0 V287.0" marker-end="url(#ah)"/>
+<g transform="translate(443 292.0)">
+  <rect class="card ks" x="0" y="0" width="313" height="72" rx="12" filter="url(#sh)"/>
+  <circle class="as" cx="24" cy="36" r="12"/><text class="num" x="24" y="40.2" text-anchor="middle">2</text>
+  <text class="ct" x="48" y="31">Single-turn worker</text>
+  <text class="cd" x="48" y="54">1 posting = 1 fresh call · no tools</text>
+  <rect class="bs" x="263" y="13" width="36" height="19" rx="9.5"/><text class="pilltx ts" x="281" y="26" text-anchor="middle">LLM</text>
+</g>
+<path class="flow" d="M599.5 367.0 V383.0" marker-end="url(#ah)"/>
+<g transform="translate(443 388.0)">
+  <rect class="card ks" x="0" y="0" width="313" height="72" rx="12" filter="url(#sh)"/>
+  <circle class="as" cx="24" cy="36" r="12"/><text class="num" x="24" y="40.2" text-anchor="middle">3</text>
+  <text class="ct" x="48" y="31">Evidence validation</text>
+  <text class="cd" x="48" y="54">Schema + verbatim JD anchors</text>
+</g>
+<path class="flow" d="M599.5 463.0 V479.0" marker-end="url(#ah)"/>
+<g transform="translate(443 484.0)">
+  <rect class="card ks" x="0" y="0" width="313" height="72" rx="12" filter="url(#sh)"/>
+  <circle class="as" cx="24" cy="36" r="12"/><text class="num" x="24" y="40.2" text-anchor="middle">4</text>
+  <text class="ct" x="48" y="31">Batch checkpoint</text>
+  <text class="cd" x="48" y="54">Atomic write · reruns skip done work</text>
+</g>
+<path class="flow" d="M599.5 559.0 V575.0" marker-end="url(#ah)"/>
+<g transform="translate(443 580.0)">
+  <rect class="card ks" x="0" y="0" width="313" height="72" rx="12" filter="url(#sh)"/>
+  <circle class="as" cx="24" cy="36" r="12"/><text class="num" x="24" y="40.2" text-anchor="middle">5</text>
+  <text class="ct" x="48" y="31">Merge &amp; dedupe</text>
+  <text class="cd" x="48" y="54">Cross-source dedupe → ACCEPT list</text>
+</g>
+<line class="div vs" x1="453" y1="670" x2="746" y2="670"/>
+<text class="ft" x="599.5" y="696" text-anchor="middle">≤ 3 parallel workers · retry once · budget cap</text>
+<!-- RESUME GENERATION -->
+<rect class="pr" x="830" y="108" width="341" height="604" rx="18"/>
+<circle class="br" cx="866" cy="146" r="18"/>
+<g class="ic sr" transform="translate(866 146)"><path d="M-5.5 -8 H2 L6 -4 V8 H-5.5 Z"/><path d="M-2.5 -1.5 H3 M-2.5 1.8 H3 M-2.5 5 H1"/></g>
+<text class="mt tr" x="894" y="143">RESUME GENERATION</text>
+<text class="ms" x="894" y="163">One tailored resume per accepted job</text>
+<g transform="translate(844 196.0)">
+  <rect class="card kr" x="0" y="0" width="313" height="72" rx="12" filter="url(#sh)"/>
+  <circle class="ar" cx="24" cy="36" r="12"/><text class="num" x="24" y="40.2" text-anchor="middle">1</text>
+  <text class="ct" x="48" y="31">Job workspaces</text>
+  <text class="cd" x="48" y="54">One folder per job · skip queued</text>
+</g>
+<path class="flow" d="M1000.5 271.0 V287.0" marker-end="url(#ah)"/>
+<g transform="translate(844 292.0)">
+  <rect class="card kr" x="0" y="0" width="313" height="72" rx="12" filter="url(#sh)"/>
+  <circle class="ar" cx="24" cy="36" r="12"/><text class="num" x="24" y="40.2" text-anchor="middle">2</text>
+  <text class="ct" x="48" y="31">Resume V1</text>
+  <text class="cd" x="48" y="54">Facts from knowledge base only</text>
+  <rect class="br" x="263" y="13" width="36" height="19" rx="9.5"/><text class="pilltx tr" x="281" y="26" text-anchor="middle">LLM</text>
+</g>
+<path class="flow" d="M1000.5 367.0 V383.0" marker-end="url(#ah)"/>
+<g transform="translate(844 388.0)">
+  <rect class="card kr" x="0" y="0" width="313" height="72" rx="12" filter="url(#sh)"/>
+  <circle class="ar" cx="24" cy="36" r="12"/><text class="num" x="24" y="40.2" text-anchor="middle">3</text>
+  <text class="ct" x="48" y="31">Quality review</text>
+  <text class="cd" x="48" y="54">Pluggable provider · exactly-once</text>
+</g>
+<path class="flow" d="M1000.5 463.0 V479.0" marker-end="url(#ah)"/>
+<g transform="translate(844 484.0)">
+  <rect class="card kr" x="0" y="0" width="313" height="72" rx="12" filter="url(#sh)"/>
+  <circle class="ar" cx="24" cy="36" r="12"/><text class="num" x="24" y="40.2" text-anchor="middle">4</text>
+  <text class="ct" x="48" y="31">Resume V2 → PDF</text>
+  <text class="cd" x="48" y="54">Rewrite with feedback · HTML → PDF</text>
+  <rect class="br" x="263" y="13" width="36" height="19" rx="9.5"/><text class="pilltx tr" x="281" y="26" text-anchor="middle">LLM</text>
+</g>
+<path class="flow" d="M1000.5 559.0 V575.0" marker-end="url(#ah)"/>
+<g transform="translate(844 580.0)">
+  <rect class="card kr" x="0" y="0" width="313" height="72" rx="12" filter="url(#sh)"/>
+  <circle class="ar" cx="24" cy="36" r="12"/><text class="num" x="24" y="40.2" text-anchor="middle">5</text>
+  <text class="ct" x="48" y="31">One-page fit</text>
+  <text class="cd" x="48" y="54">Page check · automatic trim loop</text>
+  <rect class="br" x="263" y="13" width="36" height="19" rx="9.5"/><text class="pilltx tr" x="281" y="26" text-anchor="middle">LLM</text>
+</g>
+<line class="div vr" x1="854" y1="670" x2="1147" y2="670"/>
+<text class="ft" x="1000.5" y="696" text-anchor="middle">Output guard on every generated document</text>
+<text class="gl" x="399.0" y="386.0" text-anchor="middle">jobs</text>
+<text class="gl" x="399.0" y="400.0" text-anchor="middle">JSON</text>
+<path class="flow" d="M377 410.0 H419" marker-end="url(#ah)"/>
+<text class="gl" x="800.0" y="386.0" text-anchor="middle">ACCEPT</text>
+<text class="gl" x="800.0" y="400.0" text-anchor="middle">only</text>
+<path class="flow" d="M778 410.0 H820" marker-end="url(#ah)"/>
+<!-- HUMAN REVIEW -->
+<rect class="ph" x="28" y="752" width="1144" height="120" rx="18"/>
+<circle class="bh" cx="64" cy="808" r="18"/>
+<g class="ic sh" transform="translate(64 808)"><circle cx="0" cy="-3.5" r="3.6"/><path d="M-7 8 C-6 2.5 -3 1 0 1 C3 1 6 2.5 7 8"/></g>
+<text class="mt th" x="92" y="805">HUMAN REVIEW</text>
+<text class="ms" x="92" y="825">Final decisions stay with a person</text>
+<g transform="translate(844 776)">
+  <rect class="card kh" x="0" y="0" width="313" height="72" rx="12" filter="url(#sh)"/>
+  <text class="ct" x="22" y="31">Application queue</text>
+  <text class="cd" x="22" y="54">One TODO row per one-page resume</text>
+</g>
+<g transform="translate(443 776)">
+  <rect class="card kh" x="0" y="0" width="313" height="72" rx="12" filter="url(#sh)"/>
+  <text class="ct" x="22" y="31">Review &amp; submit</text>
+  <text class="cd" x="22" y="54">Human-in-the-loop · outside this repo</text>
+</g>
+<path class="flow" d="M1000.5 715 V771" marker-end="url(#ah)"/>
+<path class="flow" d="M841 812.0 H761" marker-end="url(#ah)"/>
+</svg>
