@@ -33,11 +33,12 @@ Measured on the author's own daily runs (personal scale, 9 days of production us
 |---|---|
 | Postings screened by reading the full description | **2,846** (2,686 unique after cross-source dedupe) |
 | Model cost per screened posting | **$0.037** (1,890 production calls) |
-| Cost change, single-turn vs. agent worker (paired benchmark, n = 20) | **−82.3%** (95% CI −84.5% to −80.2%) |
+| Cost change, single-turn vs. earlier tool-using worker (paired benchmark, n = 20) | **−82.3%** (95% CI −84.5% to −80.2%) |
 | Agreement with prior decisions (stratified sample, n = 100) | **96 / 100** |
 | Schema / evidence-check failures on first attempt | **0 / 121** requests |
 | Accepted jobs that ended with a one-page tailored resume | **240 / 245** |
 | Resume generation cost per job, after redesign (n = 8) | **−65%** ($1.17 → $0.41) |
+| Design rejected on measurement: two-stage screening gate | **+31% cost** despite 0 false rejects → not shipped ([case study](#case-study-a-design-rejected-on-measurement)) |
 
 Details and caveats: [Evaluation](#evaluation).
 
@@ -58,16 +59,65 @@ Details and caveats: [Evaluation](#evaluation).
 
 ## What this repository demonstrates
 
+This is **controlled LLM workflow orchestration**: deterministic code decides the order of the steps,
+and every model call is a single, validated, function-like call (system prompt and input in, JSON out).
+It is not an autonomous agent system; there is no dynamic planning, tool choice or multi-agent
+conversation.
+
 - **Shipping an LLM workflow that is used every day**: an end-to-end automation from raw postings to a
   reviewed document, with human sign-off at the point of no return, rather than a notebook demo.
 - **Evaluating and constraining LLM output**: schema validation, verbatim evidence checks against the
-  source text as a hallucination control, paired benchmarks with confidence intervals, and a costed
-  alternative that was rejected on data.
+  source text as a hallucination control, paired benchmarks with confidence intervals, and a cost model
+  detailed enough to reject a design that passed every quality check
+  ([case study](#case-study-a-design-rejected-on-measurement)).
 - **Collecting data at scale and classifying it with an LLM**: public-API discovery across ~975 company
   boards, deduplicated incrementally, then semantic screening with a rubric the model must justify.
 - **Engineering for cost, failure and untrusted input**: prompt caching, budget caps, checkpoint and
   resume, failure classification with a circuit breaker, and layered defences against prompt injection
   from scraped text.
+
+## Case study: a design rejected on measurement
+
+**Hypothesis.** Most postings fail on a hard rule (years of experience, seniority, language, student
+status). A short "hard-reject gate" call could reject the clear cases cheaply, and only the rest would
+go on to the full screen. The goal was lower cost **without a single extra false reject**.
+
+**Experiment.** 150 stratified postings, with all 35 historical ACCEPTs run first under a stop rule,
+plus 30 postings run end to end through both stages: 170 model calls, $5.68. Every gate reject and
+every borderline case was reviewed by hand.
+
+**Quality: the gate was safe.** All 55 high-confidence rejects were correct (Wilson 93.5%–100%), and
+0 of 35 acceptable jobs were rejected. Postings that a keyword filter would get wrong ("3–5 years …
+preferred", "or equivalent" referring to the degree) were all passed on to the full screen.
+
+**Cost: it went up.**
+
+![Two-stage gate cost breakdown](docs/diagrams/gate_cost.svg)
+
+| Per call | Posting written to cache | Rules read from cache | Output | Total |
+|---|---|---|---|---|
+| Gate | $0.0226 (74%) | $0.0014 | $0.0065 | $0.0305 |
+| Full screen | $0.0225 (48%) | $0.0025 | $0.0220 | $0.0469 |
+
+Per-token prices fitted from the measured calls reproduce every reported cost to within $0.00001, so
+this breakdown is exact, not estimated. It explains the result:
+
+- Every call has to write the whole posting into the prompt cache, and that write dominates the cost.
+  Each posting that passes the gate pays for it twice.
+- A shorter gate prompt only reduces the cache *read*, which was already almost free.
+- The single-stage worker already stops early and cheaply on hard rejects (about $0.0335), so ending
+  a posting at the gate saves almost nothing.
+
+**Break-even.** The gate pays off only if at most ~9% of postings go on to the full screen; even a gate
+that stopped every posting would save only ~9%. Measured: 43% on the production mix (63% in the
+sample). Net effect: +31% per posting ($0.0367 → $0.0481).
+
+**Decision.** Not shipped; production stays single-stage. What would change the decision: a gate
+model cheap enough to cost ≤ ~$0.012 per call (for a 20% saving), or a deterministic pre-filter for
+unambiguous patterns, which would first need its own precision study.
+
+**Takeaway.** For this workload, cost is driven by how many times each posting is sent to a model,
+not by prompt length. Full write-up: [docs/decisions/two_stage_gate.md](docs/decisions/two_stage_gate.md).
 
 ## Example: one screening decision
 
@@ -218,21 +268,18 @@ from the journal instead of starting over.
 posting is screened serially first to warm the cache before the parallel pool starts. Per-call cost and
 tokens are recorded, and `--max-budget-usd` reserves an estimate before each launch.
 
-**8. A good idea rejected on data.** A two-stage design was tested on 150 postings: a short-prompt
-"hard-reject gate" call first, the full screen only for what it did not reject. The gate was safe
-(55/55 rejects confirmed correct, 0/35 acceptable jobs rejected), but cost went up 31–38%, because every
-call pays to write the posting into the cache and most postings would pay twice. It was not shipped.
-[Decision record](docs/decisions/two_stage_gate.md)
+**8. Designs are costed before they ship.** A two-stage gate that passed every quality check was
+rejected because it raised cost by 31%. See the [case study](#case-study-a-design-rejected-on-measurement).
 
 ## Evaluation
 
 | Study | Sample | Result | Report |
 |---|---|---|---|
-| Screening: single-turn vs. agent worker | 20 paired postings | Cost −82.3% (95% CI −84.5% to −80.2%), input tokens −64.8%, latency −16.5% | [screening_single_turn.md](docs/benchmarks/screening_single_turn.md) |
+| Screening: single-turn vs. earlier tool-using worker | 20 paired postings | Cost −82.3% (95% CI −84.5% to −80.2%), input tokens −64.8%, latency −16.5% | [screening_single_turn.md](docs/benchmarks/screening_single_turn.md) |
 | Screening: decision quality | 100 stratified postings | 96/100 agree with prior decisions; 1 confirmed false reject among 25 prior ACCEPTs | [screening_single_turn.md](docs/benchmarks/screening_single_turn.md#quality) |
 | Screening: format stability | 121 requests | 0 first-attempt schema / evidence failures | [screening_single_turn.md](docs/benchmarks/screening_single_turn.md#setup-and-guardrails) |
 | Screening: two-stage gate (rejected) | 150 postings + 30 end to end | 55/55 gate rejects correct, 0/35 false rejects; cost +31–38% | [two_stage_gate.md](docs/decisions/two_stage_gate.md) |
-| Resume: single-turn vs. agent worker | 8 jobs + 3 prompt-injection cases | Cost per job $1.17 → $0.41; 8/8 one page; 0 unsupported numbers; injected instructions not followed | [resume_single_turn.md](docs/benchmarks/resume_single_turn.md) |
+| Resume: single-turn vs. earlier tool-using worker | 8 jobs + 3 prompt-injection cases | Cost per job $1.17 → $0.41; 8/8 one page; 0 unsupported numbers; injected instructions not followed | [resume_single_turn.md](docs/benchmarks/resume_single_turn.md) |
 
 Caveats: samples are small, so these are go / no-go checks, not precise effect estimates. "Agreement"
 compares against the pipeline's own earlier decisions, not against an independent human label.
