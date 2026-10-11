@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cover_Letter_Example</title>
+
+  <!--
+    REFERENCE SPEC — Cover Letter HTML structure for 04_generate_documents.py
+
+    This file is a structure/style reference, not a runtime template that Python
+    must read. The implementation may generate equivalent HTML directly.
+
+    Expected Python-side content interface:
+
+    cover_letter_data = {
+      "date": str,
+      "recipient_lines": list[str],
+      "salutation": str,
+      "paragraphs": {
+        "opening": str,
+        "technical_fit": str,
+        "company_fit": str,
+        "closing": str
+      },
+      "signature": str
+    }
+
+    Recommended behavior:
+    - recipient_lines contains only non-empty lines; render each line with <br>.
+    - Keep exactly the semantic paragraph keys above even if wording changes.
+    - Header identity/contact placeholders are filled from candidate.json by Python.
+    - Output filename / HTML <title> should be controlled separately by Python.
+    - data-field attributes below are documentation hooks only; browsers ignore them.
+  -->
+
+  <style>
+    @page {
+      size: letter;
+      margin: 0.5in 0.65in 0.5in 0.65in;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: Calibri, Arial, sans-serif;
+      font-size: 10.5pt;
+      color: #000;
+      background: #fff;
+      line-height: 1.25;
+      max-width: 8.5in;
+      margin: 0 auto;
+      padding: 0.5in 0.65in;
+    }
+
+    /* ── Header (identical to resume) ── */
+    .header h1 {
+      font-size: 18pt;
+      font-weight: 700;
+      margin-bottom: 1pt;
+    }
+
+    .header .contact {
+      font-size: 10pt;
+      line-height: 1.3;
+    }
+
+    .header .contact a {
+      color: #000;
+      text-decoration: none;
+    }
+
+    /* ── Date ── */
+    .letter-date {
+      margin-top: 14pt;
+      font-size: 10.5pt;
+    }
+
+    /* ── Recipient block ── */
+    .recipient {
+      margin-top: 10pt;
+      font-size: 10.5pt;
+      line-height: 1.3;
+    }
+
+    /* ── Salutation ── */
+    .salutation {
+      margin-top: 12pt;
+      margin-bottom: 8pt;
+      font-size: 10.5pt;
+    }
+
+    /* ── Body paragraphs ── */
+    .letter-body p {
+      font-size: 10.5pt;
+      line-height: 1.35;
+      text-align: left;
+      margin-bottom: 8pt;
+    }
+
+    /* ── Closing ── */
+    .closing {
+      margin-top: 10pt;
+      font-size: 10.5pt;
+      line-height: 1.3;
+    }
+
+    .closing .signature {
+      margin-top: 2pt;
+      font-weight: 700;
+    }
+
+    /* ── PDF rendering ── */
+    @media print {
+      body {
+        padding: 0;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .recipient,
+      .salutation,
+      .closing {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER — fixed constants; same as resume -->
+  <div class="header" data-section="header">
+    <h1>{{CANDIDATE_NAME}}</h1>
+    <div class="contact">
+      {{CANDIDATE_CONTACT}}
+    </div>
+  </div>
+
+  <!-- DATE -->
+  <div class="letter-date" data-field="date">October 4, 2026</div>
+
+  <!-- RECIPIENT: render recipient_lines[] in order, one line per <br> -->
+  <div class="recipient" data-repeat="recipient_lines">
+    Hiring Manager<br>
+    Example Company<br>
+    123 Example Street<br>
+    Toronto, ON M5V 2T6
+  </div>
+
+  <!-- SALUTATION -->
+  <div class="salutation" data-field="salutation">Dear Hiring Manager,</div>
+
+  <!-- BODY: preserve these four semantic paragraph slots -->
+  <div class="letter-body" data-section="paragraphs">
+
+    <p data-field="paragraphs.opening">
+      I am writing to express my interest in the Data Analyst position at Example Company. As a data analytics
+      professional with a Master of Science in Business Analytics from Lakeshore University and hands-on
+      experience building data pipelines, machine learning models, and dashboards for clients in healthcare and
+      logistics, I am excited about the opportunity to contribute analytical and data-product expertise to the team.
+    </p>
+
+    <p data-field="paragraphs.technical_fit">
+      At Fabrikam Health Analytics, I processed 120M claims records with BigQuery and PySpark and compared
+      readmission classifiers for the clinical operations team. At Northwind Freight, I built an automated ETL
+      pipeline for carrier invoices and delivered a Power BI dashboard for contract decisions. These experiences
+      strengthened my ability to turn complex datasets into analysis-ready outputs and stakeholder-ready insights.
+    </p>
+
+    <p data-field="paragraphs.company_fit">
+      I am particularly interested in Example Company because of its focus on data-informed decision-making and
+      cross-functional collaboration. Through bi-weekly stakeholder reviews and iterative project delivery, I have
+      developed a practical approach to clarifying requirements, validating outputs, and communicating technical work
+      in a way that supports business decisions.
+    </p>
+
+    <p data-field="paragraphs.closing">
+      Thank you for considering my application for the Data Analyst position. I would welcome the opportunity to
+      discuss how my experience in Python, SQL, data pipelines, and business intelligence can support Example Company's
+      goals, and I look forward to hearing from you.
+    </p>
+
+  </div>
+
+  <!-- CLOSING -->
+  <div class="closing">
+    Sincerely,<br>
+    <div class="signature" data-field="signature">Morgan Ellis</div>
+  </div>
+
+</body>
+</html>

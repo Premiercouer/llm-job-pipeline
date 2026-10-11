@@ -11,5 +11,6 @@ tailored one-page resume for every accepted job.
 |---|---|---|
 | Discovery (Greenhouse, Ashby public board APIs) | `discovery/` | migrated |
 | Screening (single-turn LLM worker, validation, checkpoints, cross-source dedupe) | `screening/` | migrated |
-| Resume generation (V1 → external scoring → V2 → PDF → one-page trim) | `resume/` | in progress |
+| Resume generation (V1 → quality review → V2 → PDF → one-page trim) | `resume/` | migrated |
+| Resume Quality Review (provider interface, crash-safe state machine, mock / manual providers) | `scoring/` | new |
 | Shared config / candidate identity | `common/`, `config/` | migrated |

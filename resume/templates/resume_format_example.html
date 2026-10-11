@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{CANDIDATE_NAME}} — Resume</title>
+
+  <!--
+    REFERENCE SPEC — Resume HTML structure for 04_generate_documents.py
+
+    This file is a structure/style reference, not a runtime template that Python
+    must read. The implementation may generate equivalent HTML directly.
+
+    Expected Python-side content interface:
+
+    resume_data = {
+      "job_title": str,
+      "summary": str,
+      "qualifications": list[str],
+      "skills": {
+        "technical": list[str],
+        "professional": list[str]
+      },
+      "professional_experience": [
+        {
+          "role": str,
+          "company": str,
+          "date": str,
+          "bullets": list[str]
+        }
+      ],
+      "project_experience": [
+        {
+          "title": str,
+          "date": str,
+          "bullets": list[str]
+        }
+      ],
+      "education": [
+        {
+          "degree": str,
+          "date": str,
+          "coursework": str | null
+        }
+      ]
+    }
+
+    Header identity/contact placeholders are filled from candidate.json by Python.
+    data-field / data-repeat attributes below are documentation hooks only;
+    browsers ignore them and Python does not need to parse this file.
+  -->
+
+  <style>
+    @page {
+      size: letter;
+      margin: 0.5in 0.65in 0.5in 0.65in;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: Calibri, Arial, sans-serif;
+      font-size: 10.5pt;
+      color: #000;
+      background: #fff;
+      line-height: 1.25;
+      max-width: 8.5in;
+      margin: 0 auto;
+      padding: 0.5in 0.65in;
+    }
+
+    /* ── Header ── */
+    .header h1 {
+      font-size: 18pt;
+      font-weight: 700;
+      margin-bottom: 1pt;
+    }
+
+    .header .contact {
+      font-size: 10pt;
+      line-height: 1.3;
+    }
+
+    .header .contact a {
+      color: #000;
+      text-decoration: none;
+    }
+
+    /* ── Job Title ── */
+    .job-title {
+      font-size: 10.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      margin-top: 5pt;
+      margin-bottom: 2pt;
+    }
+
+    /* ── Summary prose ── */
+    .summary-text {
+      font-size: 10.5pt;
+      line-height: 1.3;
+    }
+
+    /* ── Section ── */
+    .section {
+      margin-top: 5pt;
+    }
+
+    .section-title {
+      font-size: 10.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      margin-bottom: 2pt;
+    }
+
+    /* ── Bullets ── */
+    ul {
+      padding-left: 13pt;
+      margin: 0;
+    }
+
+    ul li {
+      margin-bottom: 1.5pt;
+      line-height: 1.28;
+    }
+
+    /* ── Entry ── */
+    .entry {
+      margin-bottom: 4pt;
+    }
+
+    .entry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .entry-title {
+      font-size: 10.5pt;
+      font-weight: 700;
+    }
+
+    .entry-title .role {
+      font-style: italic;
+      font-weight: 700;
+    }
+
+    .entry-date {
+      font-size: 10pt;
+      white-space: nowrap;
+      margin-left: 8pt;
+      flex-shrink: 0;
+    }
+
+    /* ── Skills ── */
+    .skills-block p {
+      margin-bottom: 1.5pt;
+      font-size: 10.5pt;
+      line-height: 1.28;
+    }
+
+    .skills-block .label { font-weight: 700; }
+
+    /* ── Education ── */
+    .edu-entry { margin-bottom: 2pt; }
+
+    .degree {
+      font-weight: 700;
+      font-size: 10.5pt;
+    }
+
+    .coursework {
+      font-style: italic;
+      font-size: 10pt;
+      color: #222;
+    }
+
+    /* ── PDF rendering ── */
+    @media print {
+      body {
+        padding: 0;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .entry,
+      .edu-entry {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER — fixed constants; not job-specific -->
+  <div class="header" data-section="header">
+    <h1>{{CANDIDATE_NAME}}</h1>
+    <div class="contact">
+      {{CANDIDATE_CONTACT}}
+    </div>
+  </div>
+
+  <!-- JOB TITLE + SUMMARY -->
+  <div class="job-title" data-field="job_title">Data Analyst</div>
+  <p class="summary-text" data-field="summary">
+    Data analyst with hands-on experience building cloud data pipelines and KPI dashboards for
+    healthcare and logistics teams. Works in SQL, Python, Power BI and GCP, turning messy
+    multi-source data into stakeholder-ready insights.
+  </p>
+
+  <!-- SUMMARY OF QUALIFICATIONS: repeat one <li> per qualifications[] item -->
+  <div class="section" data-section="qualifications">
+    <div class="section-title">Summary of Qualifications</div>
+    <ul data-repeat="qualifications">
+      <li>Built ETL pipelines and feature sets with Python, SQL, BigQuery and PySpark</li>
+      <li>Designed Power BI and Looker dashboards used by operations managers to prioritize work</li>
+      <li>Refined KPI definitions with stakeholders in recurring requirement sessions</li>
+      <li>Trained and evaluated classification and forecasting models with scikit-learn and XGBoost</li>
+    </ul>
+  </div>
+
+  <!-- CORE SKILLS: join each list with ", " -->
+  <div class="section" data-section="skills">
+    <div class="section-title">Core Skills</div>
+    <div class="skills-block">
+      <p><span class="label">Technical:</span> <span data-field="skills.technical">Python, SQL, R, BigQuery, PySpark, Power BI, Looker, Tableau, AWS (S3, Glue, Athena), ETL Pipelines, REST API Integration</span></p>
+      <p><span class="label">Professional:</span> <span data-field="skills.professional">Stakeholder Engagement, Requirements Gathering, KPI Design, Data Storytelling</span></p>
+    </div>
+  </div>
+
+  <!-- PROFESSIONAL EXPERIENCE: repeat one .entry per professional_experience[] item -->
+  <div class="section" data-section="professional_experience">
+    <div class="section-title">Professional Experience</div>
+
+    <div class="entry" data-repeat-item="professional_experience">
+      <div class="entry-header">
+        <div class="entry-title"><span class="role" data-field="role">Data Analyst Intern</span>, <span data-field="company">Fabrikam Health Analytics</span></div>
+        <div class="entry-date" data-field="date">Sep 2025 – Apr 2026</div>
+      </div>
+      <ul data-repeat="bullets">
+        <li>Processed 120M claims records (95 GB) with BigQuery SQL and PySpark on GCP Dataproc, replacing a sampled local workflow with full-population analysis.</li>
+        <li>Compared XGBoost, Random Forest and Logistic Regression readmission classifiers, lifting recall at fixed precision by 12 points.</li>
+        <li>Built a Looker dashboard tracking weekly readmission KPIs, replacing a manual spreadsheet report.</li>
+      </ul>
+    </div>
+
+    <div class="entry" data-repeat-item="professional_experience">
+      <div class="entry-header">
+        <div class="entry-title"><span class="role" data-field="role">Business Intelligence Intern</span>, <span data-field="company">Northwind Freight Co.</span></div>
+        <div class="entry-date" data-field="date">Apr 2025 – Aug 2025</div>
+      </div>
+      <ul data-repeat="bullets">
+        <li>Designed a Power BI dashboard comparing lane cost, on-time rate and carrier mix across 14 regions.</li>
+        <li>Built an automated Python ETL pipeline consolidating 3 years of multi-sheet carrier invoices for Power BI.</li>
+        <li>Standardized carrier names and rate codes with rule-based mapping and regex, cutting duplicates by 31%.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- PROJECT EXPERIENCE: repeat one .entry per project_experience[] item -->
+  <div class="section" data-section="project_experience">
+    <div class="section-title">Project Experience</div>
+
+    <div class="entry" data-repeat-item="project_experience">
+      <div class="entry-header">
+        <div class="entry-title" data-field="title">Retail Demand Forecasting – Python, statsmodels, scikit-learn</div>
+        <div class="entry-date" data-field="date">Jan 2026 – Mar 2026</div>
+      </div>
+      <ul data-repeat="bullets">
+        <li>Built weekly SKU-level SARIMA and gradient-boosting forecasts, cutting MAPE from 18.4% to 11.9% in a 52-week back-test.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- EDUCATION: repeat one .edu-entry per education[] item; omit coursework if null/empty -->
+  <div class="section" data-section="education">
+    <div class="section-title">Education</div>
+
+    <div class="edu-entry" data-repeat-item="education">
+      <div class="entry-header">
+        <div class="degree" data-field="degree">Master of Science in Business Analytics, Lakeshore University (GPA: 3.8/4.0)</div>
+        <div class="entry-date" data-field="date">Sep 2024 – Apr 2026</div>
+      </div>
+      <div class="coursework" data-field="coursework">Relevant coursework: Data Management, Statistical Learning, Data Visualization, Optimization</div>
+    </div>
+
+    <div class="edu-entry" data-repeat-item="education" style="margin-top: 3pt;">
+      <div class="entry-header">
+        <div class="degree" data-field="degree">Bachelor of Science in Statistics, Riverside Institute of Technology</div>
+        <div class="entry-date" data-field="date">Sep 2019 – Jun 2023</div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
