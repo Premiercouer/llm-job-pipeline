@@ -32,7 +32,7 @@ SOURCE_URL = "https://kalebconfer-sys.github.io/job-board-directory/greenhouse.c
 SOURCE_PAGE = "https://kalebconfer-sys.github.io/job-board-directory/greenhouse.html"
 API_TEMPLATE = "https://boards-api.greenhouse.io/v1/boards/{token}/jobs"
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # repository root
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))  # repository root
 from common import paths  # noqa: E402
 
 DATA_ROOT = paths.data_dir("discovery", "greenhouse")  # runtime state, logs, outputs

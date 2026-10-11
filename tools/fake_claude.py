@@ -12,6 +12,8 @@ validator. The "judgement" is rule-based, not a model:
   resume V2   the same content in the V2 JSON schema
   trim        drops the last qualification, then the last project tool
   cover       four paragraphs within the word limits
+  title       rejects titles with an obviously non-data keyword (sales, recruiter, nurse, ...),
+              accepts the rest: an exact partition of the input source_keys
 
 Usage: CLAUDE_BIN=tools/fake_claude.py  (the pipeline finds it like the real CLI)
 """
@@ -42,6 +44,18 @@ def job_payload(prompt: str) -> dict:
 
 def sentences(jd: str) -> list[str]:
     return [s.strip() for s in re.split(r"(?<=[.!?])\s+|\n+", jd) if len(s.strip()) > 20]
+
+
+# --------------------------------------------------------------- title screen
+TITLE_REJECT = re.compile(r"(?i)\b(sales|account executive|recruit|nurse|warehouse|driver|cashier|"
+                          r"legal counsel|bookkeep|designer|software engineer|devops)\b")
+
+
+def title_screen(prompt: str) -> dict:
+    jobs = json.loads(re.search(r"<TITLE_INPUT>\n(.*)\n</TITLE_INPUT>", prompt, re.S).group(1))
+    rejected = [j["source_key"] for j in jobs if TITLE_REJECT.search(j["position"])]
+    return {"accepted_ids": [j["source_key"] for j in jobs if j["source_key"] not in rejected],
+            "rejected_ids": rejected}
 
 
 # ------------------------------------------------------------------ screening
@@ -160,17 +174,19 @@ def main() -> int:
                           "result": "fake_claude supports single-turn workers only"}))
         return 1
     system = Path(prompt_file).read_text(encoding="utf-8")
-    kb, payload = files(system), job_payload(prompt)
-    if "<SCREENING_RULES>" in system:
-        out = screen(payload)
+    kb = files(system)
+    if "instructions/title_screening.md" in kb:
+        out = title_screen(prompt)
+    elif "<SCREENING_RULES>" in system:
+        out = screen(job_payload(prompt))
     elif "instructions/resume_v1.md" in kb:
-        out = {"resume_v1": resume_v1(payload, kb)}
+        out = {"resume_v1": resume_v1(job_payload(prompt), kb)}
     elif "instructions/resume_v2.md" in kb:
-        out = resume_v2(payload, kb)
+        out = resume_v2(job_payload(prompt), kb)
     elif "instructions/resume_trim.md" in kb:
-        out = trim(payload)
+        out = trim(job_payload(prompt))
     elif "instructions/cover_letter.md" in kb:
-        out = cover_letter(payload)
+        out = cover_letter(job_payload(prompt))
     else:
         out = {}
     print(json.dumps({"type": "result", "subtype": "success", "is_error": False, "num_turns": 1,

@@ -14,6 +14,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 SUITES = [  # (name, start dir, top-level dir for imports, cwd)
+    ("discovery", "discovery/tests", None, REPO),
     ("discovery/greenhouse", "discovery/greenhouse/tests", None, REPO),
     ("discovery/ashby", "discovery/ashby/tests", None, REPO),
     ("screening", "screening/tests", ".", REPO),

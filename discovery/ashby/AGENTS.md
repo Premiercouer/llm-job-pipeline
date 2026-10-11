@@ -8,13 +8,18 @@ Prepare:
 python3 scripts/01_search_jobs.py
 ```
 
-The current Codex session reads `instructions/title_screening.md` and
-`.runtime/01_title_screen_input.json` only once, writes the complete two-partition result to
-`.runtime/01_title_screen_results.json`, and then runs:
+The title-screen worker reads `instructions/title_screening.md` and
+`.runtime/01_title_screen_input.json`, screens the titles in chunks with single-turn model calls, and
+writes the complete two-partition result to `.runtime/01_title_screen_results.json`. It prints the
+number of calls and their cost; pass them to finalize:
 
 ```bash
-python3 scripts/01_search_jobs.py --phase finalize --ai-invocations 1
+python3 ../title_screen.py --source ashby
+python3 scripts/01_search_jobs.py --phase finalize --ai-invocations <calls> --ai-cost-usd <cost>
 ```
+
+`run_pipeline.py` at the repository root runs these steps and passes the numbers automatically. An
+interactive agent session can still write the results file by hand instead.
 
 Title screening does not use keywords in Python, and AI is not called on all jobs before the cheap filter.
 If the title results are incomplete or final output validation fails, finalize must fail and must not commit seen state.

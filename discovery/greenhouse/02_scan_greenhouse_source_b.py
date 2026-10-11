@@ -19,7 +19,7 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple
 ROOT = Path(__file__).resolve().parent
 CORE_PATH = ROOT / "01_filter_greenhouse_boards.py"
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # repository root
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))  # repository root
 from common import paths  # noqa: E402
 
 DATA_ROOT = paths.data_dir("discovery", "greenhouse")  # runtime state, logs, outputs

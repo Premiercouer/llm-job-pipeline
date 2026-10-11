@@ -73,7 +73,7 @@
   <rect class="card kd" x="0" y="0" width="313" height="72" rx="12" filter="url(#sh)"/>
   <circle class="ad" cx="24" cy="36" r="12"/><text class="num" x="24" y="40.2" text-anchor="middle">3</text>
   <text class="ct" x="48" y="31">Title screen</text>
-  <text class="cd" x="48" y="54">One batched call · high recall</text>
+  <text class="cd" x="48" y="54">Chunked single-turn calls · high recall</text>
   <rect class="bd" x="263" y="13" width="36" height="19" rx="9.5"/><text class="pilltx td" x="281" y="26" text-anchor="middle">LLM</text>
 </g>
 <path class="flow" d="M198.5 527.0 V575.0" marker-end="url(#ah)"/>

@@ -48,12 +48,13 @@ Details and caveats: [Evaluation](#evaluation).
 
 | Stage | Path | What it does |
 |---|---|---|
-| Discovery | [`discovery/`](discovery/) | Public Greenhouse / Ashby board APIs: build a board pool, pull recent postings, drop already-seen ones, run a broad LLM title screen, fetch and clean full descriptions |
+| Discovery | [`discovery/`](discovery/) | Public Greenhouse / Ashby board APIs: build a board pool, pull recent postings, drop already-seen ones, screen titles with a single-turn LLM worker (high recall), fetch and clean full descriptions |
 | Screening | [`screening/`](screening/) | One isolated LLM call per posting, a structured decision with quoted evidence, validation, batch checkpoints, merge and cross-source dedupe |
 | Resume generation | [`resume/`](resume/) | V1 from a fixed bullet / skills library → external quality review → V2 → PDF → automatic trim until it fits one page → queue |
 | Quality review | [`scoring/`](scoring/) | Provider interface plus a crash-safe state machine for any external scoring service (mock and manual providers included) |
 | Shared | [`common/`](common/), [`config/`](config/) | Config and paths, candidate identity, single-turn worker runtime, output guard, pseudonymous telemetry |
 | Evaluation | [`eval/`](eval/), [`docs/`](docs/) | Benchmark scripts, benchmark reports, decision records, the architecture diagram |
+| Entry point | [`run_pipeline.py`](run_pipeline.py) | One command for the whole pipeline or a slice of it (`--from` / `--until`) |
 | Demo & tooling | [`demo/`](demo/), [`tools/`](tools/) | Offline end-to-end demo, fake model CLI, test runner, public-safety scan |
 | Example data | [`examples/`](examples/) | Fictional candidate (profile, bullet banks, skills) and 8 fictional job postings |
 
@@ -203,26 +204,34 @@ than the real model's judgement (see the [example above](#example-one-screening-
 2. `cp config/example.toml config/local.toml` and point `candidate_dir` at your own candidate folder
    (same layout as [`examples/candidate/`](examples/candidate/)). Every setting can also be given as an
    environment variable (`LJP_WORKSPACE`, `LJP_CANDIDATE_DIR`, …).
-3. **Discovery** (per source; details in each `discovery/*/AGENTS.md`):
-   - Build the board pool once: `discovery/greenhouse/01_filter_greenhouse_boards.py` (plus
-     `02_scan_greenhouse_source_b.py`), or `discovery/ashby/00_initialize_board_pool.py`.
-   - `scripts/01_search_jobs.py` (prepare) scans the boards and writes the new titles to
-     `.runtime/01_title_screen_input.json`.
-   - **The title screen is run by an agent session, not by the script.** An interactive coding agent
-     (for example Claude Code) reads `instructions/title_screening.md` and the input file and writes
-     `.runtime/01_title_screen_results.json`.
-   - `scripts/01_search_jobs.py --phase finalize` validates the results and commits seen state only if
-     they are complete. For Greenhouse, `scripts/02_fetch_jd.py` then fetches and cleans the full
-     descriptions; Ashby's stage 01 output already includes them.
-4. **Screening:** `screening/split_greenhouse.py` / `split_ashby.py` →
-   `screening/scripts/02_run_screening.py` → `screening/scripts/03_merge_results.py`.
-5. **Resume generation:** `resume/script/01_prepare_jobs.py` → `02_generate_v1.py` →
-   `03_review_resumes.py` → `04_generate_final.py` → `05_enqueue_applications.py`.
-6. Plug in your own review service with `--provider module:factory` (any object implementing the
+3. Build each source's board pool once: `discovery/greenhouse/01_filter_greenhouse_boards.py` (plus
+   `02_scan_greenhouse_source_b.py`) and `discovery/ashby/00_initialize_board_pool.py`.
+4. Run everything with one command:
+
+   ```bash
+   python3 run_pipeline.py                       # discovery → screening → resume, both sources
+   python3 run_pipeline.py --from screening      # reuse existing discovery outputs
+   python3 run_pipeline.py --dry-run             # print the plan
+   ```
+
+   [`run_pipeline.py`](run_pipeline.py) runs each stage's own script in order and stops at the first
+   failure; stages keep their checkpoints, so a rerun continues where it stopped. The steps are:
+   - **Discovery** (per source): `scripts/01_search_jobs.py` scans the boards →
+     [`discovery/title_screen.py`](discovery/title_screen.py) screens the new titles with single-turn
+     model calls in chunks, and writes results only if every title is covered →
+     `01_search_jobs.py --phase finalize` validates them and commits seen state → Greenhouse only:
+     `scripts/02_fetch_jd.py` fetches and cleans the full descriptions.
+   - **Screening:** `screening/split_<source>.py` → `screening/scripts/02_run_screening.py` →
+     `03_merge_results.py`.
+   - **Resume generation:** `resume/script/01_prepare_jobs.py` → `02_generate_v1.py` →
+     `03_review_resumes.py` → `04_generate_final.py` → `05_enqueue_applications.py`.
+
+   `--limit-boards N` makes a discovery-only trial run on a few boards, using the stages' test paths.
+5. Plug in your own review service with `--provider module:factory` (any object implementing the
    `ResumeScorer` protocol in [`scoring/models.py`](scoring/models.py)).
 
-Useful flags: `--workers N` (parallel calls), `--max-budget-usd X` (hard spend cap), `--dry-run`
-(check batches and checkpoints only).
+Useful flags: `--workers N` (parallel screening calls), `--max-budget-usd X` (hard screening spend cap),
+`--model M` (every worker), `--sources ashby` (one source). Each stage script also runs on its own.
 
 ## Key design decisions
 
@@ -278,6 +287,7 @@ rejected because it raised cost by 31%. See the [case study](#case-study-a-desig
 | Screening: single-turn vs. earlier tool-using worker | 20 paired postings | Cost −82.3% (95% CI −84.5% to −80.2%), input tokens −64.8%, latency −16.5% | [screening_single_turn.md](docs/benchmarks/screening_single_turn.md) |
 | Screening: decision quality | 100 stratified postings | 96/100 agree with prior decisions; 1 confirmed false reject among 25 prior ACCEPTs | [screening_single_turn.md](docs/benchmarks/screening_single_turn.md#quality) |
 | Screening: format stability | 121 requests | 0 first-attempt schema / evidence failures | [screening_single_turn.md](docs/benchmarks/screening_single_turn.md#setup-and-guardrails) |
+| Discovery: title-screen worker vs. earlier agent-session decisions | 308 historical titles | 90.6% agree; 79/85 earlier accepts kept; more permissive overall (102 vs 85 accepted) | [title_screen_worker.md](docs/benchmarks/title_screen_worker.md) |
 | Screening: two-stage gate (rejected) | 150 postings + 30 end to end | 55/55 gate rejects correct, 0/35 false rejects; cost +31–38% | [two_stage_gate.md](docs/decisions/two_stage_gate.md) |
 | Resume: single-turn vs. earlier tool-using worker | 8 jobs + 3 prompt-injection cases | Cost per job $1.17 → $0.41; 8/8 one page; 0 unsupported numbers; injected instructions not followed | [resume_single_turn.md](docs/benchmarks/resume_single_turn.md) |
 
@@ -286,12 +296,13 @@ compares against the pipeline's own earlier decisions, not against an independen
 
 ## Testing & CI
 
-- 153 offline tests across discovery, screening, quality review and resume generation, standard
+- 164 offline tests across discovery, screening, quality review and resume generation, standard
   library `unittest` only: `python3 tools/run_tests.py`.
 - [`tools/fake_claude.py`](tools/fake_claude.py) stands in for the model CLI, so guardrails, retries and
-  failure paths are tested without network or spend.
+  failure paths are tested without network or spend. One test runs the real hand-off end to end: a
+  stage 01 prepare artifact → the title-screen worker → stage 01 finalize.
 - CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs the tests on Python 3.11–3.13, runs the
-  offline demo end to end and uploads the generated PDFs, and runs a public-safety scan
+  offline demo end to end through `run_pipeline.py` and uploads the generated PDFs, and runs a public-safety scan
   ([`tools/check_public_safety.py`](tools/check_public_safety.py)) for secrets, home paths, personal
   contact details and private file types.
 

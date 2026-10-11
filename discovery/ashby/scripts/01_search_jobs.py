@@ -24,7 +24,7 @@ from zoneinfo import ZoneInfo
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))  # repository root
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))  # repository root
 from common import paths  # noqa: E402
 
 DATA_ROOT = paths.data_dir("discovery", "ashby")  # runtime state, logs, outputs

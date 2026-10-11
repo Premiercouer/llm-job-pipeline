@@ -31,7 +31,7 @@ from urllib.request import Request, urlopen
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # repository root
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))  # repository root
 from common import paths  # noqa: E402
 
 DATA_ROOT = paths.data_dir("discovery", "ashby")  # runtime state, logs, outputs
