@@ -88,6 +88,37 @@ python3 screening/scripts/04_rescreen_eligibility.py --date 2026-10-01 --scope l
 cap would be exceeded; running calls finish, so it is a soft cap. The offline path is the
 [demo](../demo/README.md).
 
+## Observed operation
+
+Historical runs of the private setup, at the version of the time, on 9 run days from 2026-10-01 to
+2026-10-10 (no run on 10-05). They are not a re-run of the two published adapters and not an
+accuracy evaluation; only aggregate counts are reported here.
+
+| From the merged daily results | |
+|---|---|
+| Screening records | 2,846 (163–451 per day) |
+| Marked as duplicates at merge | 160 (5.6%) |
+| Unique postings, summed over days | 2,686 |
+| ACCEPT | 168 (6.3% of unique) |
+| REJECT | 2,502 (93.1%) |
+| UNABLE TO ASSESS | 16 (0.6%) |
+
+The records cover the five private sources that reached screening; the full collection setup
+covers seven platforms. A record is not a model call: reruns add calls without adding records, and
+an empty description is decided locally. Duplicates are removed within each day only, with no
+extra content dedupe across days, so the unique total is a sum of daily counts.
+
+**Cost.** The six single-turn run logs that were kept, including runs kept as backups and the
+recovery reruns, record 1,890 calls at a CLI-reported list-price equivalent of $70.7237, about
+$0.03742 per call. Each log is a separate run, so no run is counted twice. This is not
+subscription cash spend, and 1,890 calls are not 1,890 distinct postings.
+
+**Recovery, 2026-10-08.** The day's main run made 328 calls. One answer was not valid JSON, so its
+batch was not checkpointed; the other 34 of 35 batches were. Each of two reruns skipped the
+checkpointed batches and re-screened only that batch's 10 postings: the first hit the same
+failure, the second passed. Recovery cost 20 extra calls and $0.6516
+([details](../docs/operational_experience.md#one-unparseable-answer-blocked-one-batch-not-the-run)).
+
 ## Validation and limitations
 
 - Tests: `python3 tools/run_tests.py screening` (validator, guardrails, retries, the API backend
