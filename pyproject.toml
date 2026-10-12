@@ -11,6 +11,7 @@ dependencies = [
 
 [project.optional-dependencies]
 api = ["anthropic>=1.0"]               # --backend api: Messages API instead of the Claude Code CLI
+rag = ["numpy>=1.26", "scikit-learn>=1.4"]  # experiments/candidate_fact_rag only; the pipeline never needs it
 dev = []                              # tests use only the standard library (unittest)
 
 [tool.setuptools]

@@ -34,6 +34,25 @@ jobs:
       - name: offline test suites
         run: python tools/run_tests.py
 
+  experiments:
+    name: experiments (analysis reproduction, RAG tests + offline demo)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install "pymupdf>=1.24" "numpy>=1.26" "scikit-learn>=1.4"
+      - name: candidate-fact RAG tests (with the optional rag dependencies)
+        run: python tools/run_tests.py experiments
+      - name: offline RAG demo (fake generator, fictional candidate and JD)
+        run: python experiments/candidate_fact_rag/scripts/demo.py --out "$RUNNER_TEMP/rag-demo"
+      - name: published numbers follow from the published data
+        run: |
+          python experiments/two_stage_gate/scripts/analyze_gate.py --check
+          python experiments/candidate_fact_rag/scripts/analyze_dev_results.py --check
+          git diff --exit-code -- experiments/
+
   demo:
     name: offline end-to-end demo
     runs-on: ubuntu-latest

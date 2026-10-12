@@ -33,6 +33,7 @@ data/
 output/
 outputs/
 results/
+!experiments/*/results/
 input_batches/
 jobs/
 .snap_tmp*

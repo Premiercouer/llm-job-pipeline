@@ -21,6 +21,8 @@ SUITES = [  # (name, start dir, top-level dir for imports, cwd)
     ("screening", "screening/tests", ".", REPO),
     ("scoring", "scoring/tests", ".", REPO),
     ("resume", "test", None, REPO / "resume"),
+    # evaluated alternative, not part of the pipeline; numpy-dependent tests skip without the `rag` extra
+    ("experiments/candidate_fact_rag", "tests", ".", REPO / "experiments" / "candidate_fact_rag"),
 ]
 
 
