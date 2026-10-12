@@ -331,9 +331,11 @@ compares against the pipeline's own earlier decisions, not against an independen
   resumes, application history and raw job descriptions are kept outside the repository and never
   committed.
 - **Included sources: public APIs only.** Only Greenhouse and Ashby discovery are published, because
-  both are public job-board APIs. The author's private setup also collects from other job sites; that
-  code is not included and is not needed to run the pipeline. Any source that writes the same JSON shape
-  can feed the screening stage.
+  both are public job-board APIs. The author's private setup collects from seven job platforms: these
+  two plus five private sources, which screen broadly before requesting full descriptions
+  ([discovery](discovery/README.md#private-workflow-and-published-scope)). That code is not included
+  and is not needed to run the pipeline. Any source that writes the same JSON shape can feed the
+  screening stage.
 - **External scoring is an interface.** `scoring/` ships the protocol, the state machine and mock / manual
   providers. Integrations with specific commercial services are out of scope.
 - **Submitting applications is out of scope.** The pipeline stops at a queue that a person reviews.

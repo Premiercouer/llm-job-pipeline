@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="800" viewBox="0 0 900 800" role="img" aria-labelledby="t d">
+<title id="t">Observed discovery funnel</title>
+<desc id="d">One private-source run; measured counts from a complete batch on 2026-10-10. 6,483 raw listing records; 4,615 duplicate records of the same posting removed, leaving 1,868 unique postings; 1,467 already in the seen state excluded, leaving 401 new postings; the broad screen rejected 264 and kept 137; full descriptions were requested for 137 and all 137 were retrieved; 12 exact content duplicates removed; 125 full job records handed off to screening. Boxes are not drawn to scale.</desc>
+<!-- Companion to discovery_collection_paths.svg. Counts are aggregates from one run's logs and output files. -->
+<style>
+  text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif; }
+  .bg { fill: #F8FAFC; stroke: #E2E8F0; }
+  .h1 { fill: #0F172A; font-size: 26px; font-weight: 700; }
+  .h2 { fill: #64748B; font-size: 15px; }
+  .mt { font-size: 14px; font-weight: 700; letter-spacing: 1.2px; }
+  .ct { fill: #0F172A; font-size: 16px; font-weight: 600; }
+  .cd { fill: #475569; font-size: 14px; }
+  .nm { fill: #0F172A; font-size: 24px; font-weight: 700; }
+  .ex { fill: #9A3412; font-size: 14px; }
+  .ft { fill: #64748B; font-size: 14px; font-style: italic; }
+  .card { fill: #FFFFFF; }
+  .flow { fill: none; stroke: #94A3B8; stroke-width: 1.6; }
+  .head { fill: #94A3B8; }
+  .ph { fill: #F3F4F6; stroke: #DCDFE4; } .kh { stroke: #DCDFE4; } .th { fill: #4B5563; }
+  .kd { stroke: #D6E4F7; } .td { fill: #2F6FDB; }
+  @media (prefers-color-scheme: dark) {
+    .bg { fill: #0D1117; stroke: #30363D; }
+    .h1, .ct, .nm { fill: #E6EDF3; }
+    .h2, .ft { fill: #8B949E; }
+    .cd { fill: #B1BAC4; }
+    .ex { fill: #F0A274; }
+    .card { fill: #161B22; }
+    .flow { stroke: #6E7681; } .head { fill: #6E7681; }
+    .ph { fill: #161B22; stroke: #30363D; } .kh { stroke: #30363D; } .th { fill: #C9D1D9; }
+    .kd { stroke: #24405F; } .td { fill: #6CA2F5; }
+  }
+</style>
+<defs>
+  <filter id="sh" x="-5%" y="-10%" width="110%" height="130%">
+    <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="#0F172A" flood-opacity="0.07"/>
+  </filter>
+  <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path class="head" d="M0 0 L10 5 L0 10 Z"/>
+  </marker>
+</defs>
+<rect class="bg" x="0.5" y="0.5" width="899" height="799" rx="16"/>
+<text class="h1" x="28" y="54">Observed discovery funnel</text>
+<text class="mt td" x="28" y="82">ONE PRIVATE-SOURCE RUN; MEASURED COUNTS</text>
+<text class="h2" x="446" y="82">2026-10-10 · complete batch · not to scale</text>
+
+<!-- stages -->
+<g transform="translate(28 112)">
+  <rect class="card kd" x="0" y="0" width="580" height="64" rx="12" filter="url(#sh)"/>
+  <text class="ct" x="20" y="27">Raw listing records</text>
+  <text class="cd" x="20" y="49">search already limited by location and date</text>
+  <text class="nm" x="560" y="41" text-anchor="end">6,483</text>
+</g>
+<path class="flow" d="M60 179 V215" marker-end="url(#ah)"/>
+<text class="ex" x="80" y="203">− 4,615 duplicate records of the same posting (several searches)</text>
+<g transform="translate(28 220)">
+  <rect class="card kd" x="0" y="0" width="580" height="64" rx="12" filter="url(#sh)"/>
+  <text class="ct" x="20" y="27">Unique postings</text>
+  <text class="cd" x="20" y="49">merged by posting ID</text>
+  <text class="nm" x="560" y="41" text-anchor="end">1,868</text>
+</g>
+<path class="flow" d="M60 287 V323" marker-end="url(#ah)"/>
+<text class="ex" x="80" y="311">− 1,467 already in the seen state at run time (seen, not rejected)</text>
+<g transform="translate(28 328)">
+  <rect class="card kd" x="0" y="0" width="580" height="64" rx="12" filter="url(#sh)"/>
+  <text class="ct" x="20" y="27">New postings = broad-screen input</text>
+  <text class="cd" x="20" y="49">titles only, no description</text>
+  <text class="nm" x="560" y="41" text-anchor="end">401</text>
+</g>
+<path class="flow" d="M60 395 V431" marker-end="url(#ah)"/>
+<text class="ex" x="80" y="419">− 264 rejected by the broad screen · 0 undecided</text>
+<g transform="translate(28 436)">
+  <rect class="card kd" x="0" y="0" width="580" height="64" rx="12" filter="url(#sh)"/>
+  <text class="ct" x="20" y="27">Kept → full JD requested</text>
+  <text class="cd" x="20" y="49">one detail request per posting, 0 retries</text>
+  <text class="nm" x="560" y="41" text-anchor="end">137</text>
+</g>
+<path class="flow" d="M60 503 V539" marker-end="url(#ah)"/>
+<text class="ex" x="80" y="527">− 0 closed · 0 failed</text>
+<g transform="translate(28 544)">
+  <rect class="card kd" x="0" y="0" width="580" height="64" rx="12" filter="url(#sh)"/>
+  <text class="ct" x="20" y="27">Full JD retrieved</text>
+  <text class="cd" x="20" y="49">description extracted and cleaned to text</text>
+  <text class="nm" x="560" y="41" text-anchor="end">137</text>
+</g>
+<path class="flow" d="M60 611 V647" marker-end="url(#ah)"/>
+<text class="ex" x="80" y="635">− 12 same company and same description</text>
+<g transform="translate(28 652)">
+  <rect class="card kd" x="0" y="0" width="580" height="64" rx="12" filter="url(#sh)"/>
+  <text class="ct" x="20" y="27">Handed off to screening</text>
+  <text class="cd" x="20" y="49">full job records</text>
+  <text class="nm" x="560" y="41" text-anchor="end">125</text>
+</g>
+
+<!-- reading notes -->
+<g transform="translate(636 112)">
+  <rect class="ph" x="0" y="0" width="236" height="604" rx="14"/>
+  <text class="mt th" x="18" y="32">HOW TO READ</text>
+  <text class="cd" x="18" y="64">Counts are one run of one</text>
+  <text class="cd" x="18" y="84">private source, not a total</text>
+  <text class="cd" x="18" y="104">over the five private sources</text>
+  <text class="cd" x="18" y="124">or the seven platforms.</text>
+  <text class="cd" x="18" y="164">Raw records count a posting</text>
+  <text class="cd" x="18" y="184">once per search that</text>
+  <text class="cd" x="18" y="204">returned it.</text>
+  <text class="cd" x="18" y="244">Seen-state exclusions are</text>
+  <text class="cd" x="18" y="264">postings found by earlier</text>
+  <text class="cd" x="18" y="284">runs, not poor fits.</text>
+  <text class="cd" x="18" y="324">Location and date limits</text>
+  <text class="cd" x="18" y="344">are part of the search</text>
+  <text class="cd" x="18" y="364">request; how many postings</text>
+  <text class="cd" x="18" y="384">they exclude is not recorded.</text>
+  <text class="cd" x="18" y="424">Full JD requested for 137 of</text>
+  <text class="cd" x="18" y="444">6,483 raw records (137 of</text>
+  <text class="cd" x="18" y="464">1,868 unique postings).</text>
+  <text class="cd" x="18" y="504">Boxes share one width;</text>
+  <text class="cd" x="18" y="524">only the numbers carry size.</text>
+</g>
+
+<text class="ft" x="28" y="756">Source: that run's own logs and output files. Each subtracted count equals the drop between the two boxes.</text>
+<text class="ft" x="28" y="778">The concept diagram of all collection paths is discovery_collection_paths.svg.</text>
+</svg>

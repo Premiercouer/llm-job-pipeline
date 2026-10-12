@@ -1,0 +1,177 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="960" viewBox="0 0 1000 960" role="img" aria-labelledby="t d">
+<title id="t">Discovery collection paths</title>
+<desc id="d">Collection order and integration boundaries. Published adapters: Ashby lists jobs with the description included, then runs a broad screen; Greenhouse lists jobs, runs a broad screen, then fetches the description from its detail API. Five additional private job sources, whose code is not published, list job summaries, run a broad screen, and request the full description only for kept jobs. All paths converge on a unified full job record, followed by full-text screening, merge with cross-source dedupe, and resume generation with quality review.</desc>
+<!-- Supplements architecture.svg. Same palette and type as that file; colours are CSS classes with a dark-theme override. -->
+<style>
+  text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif; }
+  .bg { fill: #F8FAFC; stroke: #E2E8F0; }
+  .h1 { fill: #0F172A; font-size: 26px; font-weight: 700; }
+  .h2 { fill: #64748B; font-size: 15px; }
+  .mt { font-size: 14px; font-weight: 700; letter-spacing: 1.2px; }
+  .ms { fill: #64748B; font-size: 14px; }
+  .sn { fill: #0F172A; font-size: 17px; font-weight: 700; }
+  .ct { fill: #0F172A; font-size: 16px; font-weight: 600; }
+  .cd { fill: #475569; font-size: 14px; }
+  .ft { fill: #64748B; font-size: 14px; font-style: italic; }
+  .card { fill: #FFFFFF; }
+  .pilltx { font-size: 10px; font-weight: 700; letter-spacing: 0.6px; }
+  .flow { fill: none; stroke: #94A3B8; stroke-width: 1.6; }
+  .head { fill: #94A3B8; }
+  .ghost { fill: none; stroke: #CBD5E1; stroke-width: 1.4; stroke-dasharray: 6 5; }
+  .dash { stroke-dasharray: 7 5; stroke-width: 1.4; }
+  .pd { fill: #EEF5FF; stroke: #CFE0F7; } .kd { stroke: #D6E4F7; } .td { fill: #2F6FDB; } .bd { fill: #DCE9FB; }
+  .ps { fill: #F5F2FF; stroke: #DED5F7; } .ks { stroke: #E2DAF8; } .ts { fill: #6448D9; } .bs { fill: #E7E0FB; }
+  .pr { fill: #EEF8F2; stroke: #CDE8D7; } .kr { stroke: #D3EBDD; } .tr { fill: #178452; } .br { fill: #D7F0E2; }
+  .ph { fill: #F3F4F6; stroke: #B8BEC8; } .kh { stroke: #DCDFE4; } .th { fill: #4B5563; }
+  @media (prefers-color-scheme: dark) {
+    .bg { fill: #0D1117; stroke: #30363D; }
+    .h1, .sn, .ct { fill: #E6EDF3; }
+    .h2, .ms, .ft { fill: #8B949E; }
+    .cd { fill: #B1BAC4; }
+    .card { fill: #161B22; }
+    .flow { stroke: #6E7681; } .head { fill: #6E7681; }
+    .ghost { stroke: #484F58; }
+    .pd { fill: #0E1A2B; stroke: #1F3A5F; } .kd { stroke: #24405F; } .td { fill: #6CA2F5; } .bd { fill: #1A3152; }
+    .ps { fill: #17132A; stroke: #3A2F66; } .ks { stroke: #3D3366; } .ts { fill: #A894FF; } .bs { fill: #2C2452; }
+    .pr { fill: #0D1F17; stroke: #1E4D36; } .kr { stroke: #24533B; } .tr { fill: #4CC38A; } .br { fill: #173B2A; }
+    .ph { fill: #161B22; stroke: #57606A; } .kh { stroke: #30363D; } .th { fill: #C9D1D9; }
+  }
+</style>
+<defs>
+  <filter id="sh" x="-5%" y="-10%" width="110%" height="130%">
+    <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="#0F172A" flood-opacity="0.07"/>
+  </filter>
+  <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path class="head" d="M0 0 L10 5 L0 10 Z"/>
+  </marker>
+</defs>
+<rect class="bg" x="0.5" y="0.5" width="999" height="959" rx="16"/>
+<text class="h1" x="28" y="54">Discovery collection paths</text>
+<text class="h2" x="28" y="80">Collection order and integration boundaries · overview, not a per-source specification</text>
+<!-- legend -->
+<g transform="translate(776 30)"><rect class="bd" x="0" y="0" width="36" height="19" rx="9.5"/><text class="pilltx td" x="18" y="13" text-anchor="middle">LLM</text><text class="ms" x="46" y="14">= model call</text></g>
+<g transform="translate(776 58)"><rect class="ph dash" x="0" y="0" width="36" height="19" rx="6"/><text class="ms" x="46" y="14">= not published</text></g>
+
+<!-- PUBLISHED ADAPTERS -->
+<rect class="pd" x="24" y="104" width="616" height="508" rx="18"/>
+<text class="mt td" x="44" y="136">PUBLISHED ADAPTERS</text>
+<text class="ms" x="44" y="158">In this repository · driven by run_pipeline.py</text>
+<text class="sn" x="44" y="204">Ashby</text>
+<text class="ms" x="44" y="226">public posting API</text>
+<text class="sn" x="348" y="204">Greenhouse</text>
+<text class="ms" x="348" y="226">public board API + detail API</text>
+
+<!-- PRIVATE INTEGRATIONS -->
+<rect class="ph dash" x="656" y="104" width="320" height="508" rx="18"/>
+<text class="mt th" x="676" y="136">PRIVATE INTEGRATIONS</text>
+<text class="ms" x="676" y="158">Code not in this repository</text>
+<text class="sn" x="680" y="204">Five additional private</text>
+<text class="sn" x="680" y="226">job sources</text>
+
+<!-- Row 1: listing -->
+<g transform="translate(40 248)">
+  <rect class="card kd" x="0" y="0" width="280" height="84" rx="12" filter="url(#sh)"/>
+  <text class="ct" x="18" y="30">Job list, JD included</text>
+  <text class="cd" x="18" y="53">listing response already carries</text>
+  <text class="cd" x="18" y="71">the plain-text description</text>
+</g>
+<g transform="translate(344 248)">
+  <rect class="card kd" x="0" y="0" width="280" height="84" rx="12" filter="url(#sh)"/>
+  <text class="ct" x="18" y="30">Job list</text>
+  <text class="cd" x="18" y="53">title, location, update time, ID;</text>
+  <text class="cd" x="18" y="71">no description yet</text>
+</g>
+<g transform="translate(676 248)">
+  <rect class="card kh" x="0" y="0" width="280" height="84" rx="12" filter="url(#sh)"/>
+  <text class="ct" x="18" y="30">Job summaries</text>
+  <text class="cd" x="18" y="53">summary fields from each</text>
+  <text class="cd" x="18" y="71">source; no full JD yet</text>
+</g>
+<path class="flow" d="M180 335 V371" marker-end="url(#ah)"/>
+<path class="flow" d="M484 335 V371" marker-end="url(#ah)"/>
+<path class="flow" d="M816 335 V371" marker-end="url(#ah)"/>
+
+<!-- Row 2: broad screen -->
+<g transform="translate(40 376)">
+  <rect class="card kd" x="0" y="0" width="280" height="84" rx="12" filter="url(#sh)"/>
+  <text class="ct" x="18" y="30">Broad screen</text>
+  <rect class="bd" x="228" y="14" width="36" height="19" rx="9.5"/><text class="pilltx td" x="246" y="27" text-anchor="middle">LLM</text>
+  <text class="cd" x="18" y="53">seen IDs · location · ≤ 7 days,</text>
+  <text class="cd" x="18" y="71">then title-only screen</text>
+</g>
+<g transform="translate(344 376)">
+  <rect class="card kd" x="0" y="0" width="280" height="84" rx="12" filter="url(#sh)"/>
+  <text class="ct" x="18" y="30">Broad screen</text>
+  <rect class="bd" x="228" y="14" width="36" height="19" rx="9.5"/><text class="pilltx td" x="246" y="27" text-anchor="middle">LLM</text>
+  <text class="cd" x="18" y="53">seen IDs · location · ≤ 7 days,</text>
+  <text class="cd" x="18" y="71">then title-only screen</text>
+</g>
+<g transform="translate(676 376)">
+  <rect class="card kh" x="0" y="0" width="280" height="84" rx="12" filter="url(#sh)"/>
+  <text class="ct" x="18" y="30">Broad screen</text>
+  <text class="cd" x="18" y="53">before any full JD request;</text>
+  <text class="cd" x="18" y="71">method varies by source</text>
+</g>
+<path class="flow" d="M180 463 V499" marker-end="url(#ah)"/>
+<path class="flow" d="M484 463 V499" marker-end="url(#ah)"/>
+<path class="flow" d="M816 463 V499" marker-end="url(#ah)"/>
+
+<!-- Row 3: full description -->
+<g transform="translate(40 504)">
+  <rect class="ghost" x="0" y="0" width="280" height="84" rx="12"/>
+  <text class="ft" x="140" y="38" text-anchor="middle">No detail request:</text>
+  <text class="ft" x="140" y="58" text-anchor="middle">JD came with the listing</text>
+</g>
+<g transform="translate(344 504)">
+  <rect class="card kd" x="0" y="0" width="280" height="84" rx="12" filter="url(#sh)"/>
+  <text class="ct" x="18" y="30">Detail API → full JD</text>
+  <text class="cd" x="18" y="53">one request per kept job;</text>
+  <text class="cd" x="18" y="71">HTML to text · date re-check</text>
+</g>
+<g transform="translate(676 504)">
+  <rect class="card kh" x="0" y="0" width="280" height="84" rx="12" filter="url(#sh)"/>
+  <text class="ct" x="18" y="30">Full JD, kept jobs only</text>
+  <text class="cd" x="18" y="53">requested only for postings</text>
+  <text class="cd" x="18" y="71">that passed the broad screen</text>
+</g>
+<path class="flow" d="M180 591 V645" marker-end="url(#ah)"/>
+<path class="flow" d="M484 591 V645" marker-end="url(#ah)"/>
+<path class="flow" d="M816 591 V645" marker-end="url(#ah)"/>
+
+<!-- Convergence -->
+<g transform="translate(24 650)">
+  <rect class="card ks" x="0" y="0" width="952" height="76" rx="14" filter="url(#sh)"/>
+  <text class="ct" x="476" y="32" text-anchor="middle">Unified full job record</text>
+  <text class="cd" x="476" y="56" text-anchor="middle">one job schema for every source: company · position · full JD · apply URL</text>
+</g>
+<path class="flow" d="M166 729 V775" marker-end="url(#ah)"/>
+<text class="mt ts" x="190" y="760">SHARED DOWNSTREAM STAGES</text>
+<text class="ms" x="462" y="760">after the paths converge</text>
+
+<!-- Downstream -->
+<g transform="translate(24 780)">
+  <rect class="card ks" x="0" y="0" width="284" height="84" rx="12" filter="url(#sh)"/>
+  <text class="ct" x="18" y="30">Full-text screening</text>
+  <rect class="bs" x="232" y="14" width="36" height="19" rx="9.5"/><text class="pilltx ts" x="250" y="27" text-anchor="middle">LLM</text>
+  <text class="cd" x="18" y="53">full JD vs. candidate profile,</text>
+  <text class="cd" x="18" y="71">one model call per posting</text>
+</g>
+<path class="flow" d="M311 822 H353" marker-end="url(#ah)"/>
+<g transform="translate(358 780)">
+  <rect class="card ks" x="0" y="0" width="284" height="84" rx="12" filter="url(#sh)"/>
+  <text class="ct" x="18" y="30">Merge &amp; cross-source dedupe</text>
+  <text class="cd" x="18" y="53">duplicates found by title and</text>
+  <text class="cd" x="18" y="71">description overlap</text>
+</g>
+<path class="flow" d="M645 822 H687" marker-end="url(#ah)"/>
+<g transform="translate(692 780)">
+  <rect class="card kr" x="0" y="0" width="284" height="84" rx="12" filter="url(#sh)"/>
+  <text class="ct" x="18" y="30">Resume + quality review</text>
+  <rect class="br" x="232" y="14" width="36" height="19" rx="9.5"/><text class="pilltx tr" x="250" y="27" text-anchor="middle">LLM</text>
+  <text class="cd" x="18" y="53">tailored resume, review pass,</text>
+  <text class="cd" x="18" y="71">queued for a person to check</text>
+</g>
+
+<text class="ft" x="28" y="906">The private lane shows only the order all five sources share; their collection code is not published.</text>
+<text class="ft" x="28" y="930">run_pipeline.py and title_screen.py drive the two published adapters only.</text>
+</svg>
