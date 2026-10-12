@@ -1,0 +1,58 @@
+{
+  "_doc": "Aggregates that cannot be recomputed from generations.csv. Exported from the private experiment; values only, no text.",
+  "historical_L_production_telemetry": {
+    "_doc": "Earlier production Read-agent V1 worker, read-only telemetry. Different jobs and days from the dev run; never paired with it.",
+    "calls": 44,
+    "valid": 34,
+    "invalid": 10,
+    "cost_mean_usd": 0.4187,
+    "latency_median_ms": 35625.0,
+    "latency_p90_ms": 40815.4,
+    "turns_median": 6.0
+  },
+  "spend_ledger_usd": {
+    "total_reported": 6.8285,
+    "budget_cap": 20.0,
+    "preflight": 0.0586,
+    "A": 1.4389,
+    "L": 2.5524,
+    "B": 2.7785,
+    "_doc": "CLI-reported list-price equivalent, not subscription cash. 'B' includes B and B_prime."
+  },
+  "corpus": {
+    "facts": 365,
+    "evidence_facts": 322,
+    "entities": 20
+  },
+  "auditor_test_cases": {
+    "_doc": "Constructed claims with known defects, run against the private corpus. v1 and v2 were used to change the auditor, so they are regression tests, not held-out evidence.",
+    "v1_before_fix": [
+      15,
+      18
+    ],
+    "v1_after_changes": [
+      18,
+      18
+    ],
+    "v2_first_eval": [
+      14,
+      15
+    ],
+    "v2_after_changes": [
+      14,
+      15
+    ],
+    "v3_single_eval": [
+      9,
+      9
+    ],
+    "historical_L_alarms_cleared_by_calibration": {
+      "TOOL_WRONG_ENTITY": 126
+    },
+    "historical_L_flags_before_after_tightening": [
+      1309,
+      63
+    ],
+    "historical_L_claims_audited": 8987
+  }
+}

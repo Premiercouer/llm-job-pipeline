@@ -1,0 +1,70 @@
+{
+  "_doc": "Retrieval settings for the fictional candidate in examples/candidate/ (10 work bullets, 4 projects). Scaled down from the historical B' configuration so that retrieval actually has to choose; the historical parameters are in historical/. Illustrative only: these values were not tuned or evaluated on real jobs.",
+  "index_keyword_tags": true,
+  "bm25": {
+    "k1": 1.4,
+    "b": 0.75
+  },
+  "embedding": {
+    "backend": "tfidf_lsa",
+    "params": {
+      "dim": 128,
+      "seed": 13
+    }
+  },
+  "fusion": {
+    "method": "weighted",
+    "bm25_weight": 0.5,
+    "rrf_k": 60
+  },
+  "aggregate": {
+    "top_m": 3,
+    "mean_top_weight": 0.3
+  },
+  "queries": {
+    "query_type_weights": {
+      "requirement": 1.0,
+      "responsibility": 1.0,
+      "skill": 0.8,
+      "preferred": 0.6,
+      "business": 0.4,
+      "title": 0.7
+    },
+    "max_queries_per_type": {
+      "requirement": 25,
+      "responsibility": 25,
+      "skill": 30,
+      "preferred": 12,
+      "business": 8,
+      "title": 1
+    },
+    "max_skill_queries": 30
+  },
+  "selection": {
+    "experience_quota": {
+      "min": 3,
+      "max": 4
+    },
+    "n_projects": 2,
+    "per_project_facts": [
+      3,
+      2
+    ],
+    "project_low_value_types": [
+      "workflow_step",
+      "project_context",
+      "proposed_design",
+      "team_role"
+    ],
+    "project_excluded_types": [],
+    "min_fact_score": 0.05,
+    "dedup_jaccard": 0.6,
+    "evidence_token_budget": 1400,
+    "cover_threshold": 0.35,
+    "max_lost_supportable_ratio": 0.25,
+    "vocabulary": {
+      "include_core": true,
+      "ats_mode": "jd_matched"
+    }
+  }
+}

@@ -1,0 +1,140 @@
+sample_id,stratum,review_reasons,gate_reject_judged_correct,anchor_supports_reject,true_accept_false_rejected
+G004,ACCEPT,historical ACCEPT,,,0
+G001,ACCEPT,historical ACCEPT,,,0
+G010,ACCEPT,historical ACCEPT,,,0
+G028,ACCEPT,historical ACCEPT|<=2-year experience wording,,,0
+G012,ACCEPT,historical ACCEPT|30-job final decision differs,,,0
+G024,ACCEPT,historical ACCEPT|<=2-year experience wording,,,0
+G026,ACCEPT,historical ACCEPT,,,0
+G029,ACCEPT,historical ACCEPT|French mention / French text|<=2-year experience wording,,,0
+G019,ACCEPT,historical ACCEPT|<=2-year experience wording,,,0
+G014,ACCEPT,historical ACCEPT,,,0
+G002,ACCEPT,historical ACCEPT|Senior/Lead/Manager only in title,,,0
+G035,ACCEPT,historical ACCEPT|<=2-year experience wording,,,0
+G018,ACCEPT,historical ACCEPT|<=2-year experience wording,,,0
+G033,ACCEPT,historical ACCEPT|<=2-year experience wording,,,0
+G017,ACCEPT,historical ACCEPT,,,0
+G032,ACCEPT,historical ACCEPT|<=2-year experience wording,,,0
+G006,ACCEPT,historical ACCEPT|<=2-year experience wording,,,0
+G023,ACCEPT,historical ACCEPT,,,0
+G008,ACCEPT,historical ACCEPT|Senior/Lead/Manager only in title,,,0
+G020,ACCEPT,historical ACCEPT|<=2-year experience wording,,,0
+G034,ACCEPT,historical ACCEPT,,,0
+G005,ACCEPT,historical ACCEPT,,,0
+G022,ACCEPT,historical ACCEPT,,,0
+G009,ACCEPT,historical ACCEPT|French mention / French text,,,0
+G011,ACCEPT,historical ACCEPT|French mention / French text|<=2-year experience wording,,,0
+G007,ACCEPT,historical ACCEPT,,,0
+G021,ACCEPT,historical ACCEPT|<=2-year experience wording,,,0
+G015,ACCEPT,historical ACCEPT,,,0
+G025,ACCEPT,historical ACCEPT|French mention / French text|<=2-year experience wording,,,0
+G016,ACCEPT,historical ACCEPT,,,0
+G030,ACCEPT,historical ACCEPT|<=2-year experience wording,,,0
+G013,ACCEPT,historical ACCEPT,,,0
+G031,ACCEPT,historical ACCEPT|<=2-year experience wording,,,0
+G027,ACCEPT,historical ACCEPT|<=2-year experience wording,,,0
+G003,ACCEPT,historical ACCEPT|<=2-year experience wording,,,0
+G144,MANDATORY_QUALIFICATION,routed to stage 2 but historical HR,,,0
+G039,REJECT_NO_HR,<=2-year experience wording,,,0
+G109,SPECIALIZED_EXPERIENCE,routed to stage 2 but historical HR,,,0
+G127,LANGUAGE,gate HIGH REJECT|gate type != historical type|French mention / French text,1,1,0
+G098,SPECIALIZED_EXPERIENCE,routed to stage 2 but historical HR|<=2-year experience wording,,,0
+G118,LANGUAGE,gate HIGH REJECT|French mention / French text,1,1,0
+G064,REQUIRED_EXPERIENCE,gate HIGH REJECT,1,1,0
+G079,REQUIRED_EXPERIENCE,routed to stage 2 but historical HR,,,0
+G052,REJECT_NO_HR,<=2-year experience wording,,,0
+G143,MANDATORY_QUALIFICATION,routed to stage 2 but historical HR,,,0
+G096,SENIORITY,gate HIGH REJECT,1,1,0
+G059,REQUIRED_EXPERIENCE,gate HIGH REJECT|<=2-year experience wording,1,1,0
+G115,LANGUAGE,gate HIGH REJECT|French mention / French text,1,1,0
+G095,SENIORITY,gate HIGH REJECT|gate type != historical type|<=2-year experience wording,1,1,0
+G097,SENIORITY,gate HIGH REJECT|<=2-year experience wording,1,1,0
+G113,LANGUAGE,gate HIGH REJECT|French mention / French text,1,1,0
+G132,STUDENT_ELIGIBILITY,gate HIGH REJECT|<=2-year experience wording,1,1,0
+G083,SENIORITY,gate HIGH REJECT|gate type != historical type|<=2-year experience wording,1,1,0
+G137,STUDENT_ELIGIBILITY,gate HIGH REJECT,1,1,0
+G080,REQUIRED_EXPERIENCE,gate HIGH REJECT,1,1,0
+G044,REJECT_NO_HR,French mention / French text,,,0
+G068,REQUIRED_EXPERIENCE,gate HIGH REJECT,1,1,0
+G085,SENIORITY,gate HIGH REJECT|gate type != historical type,1,1,0
+G103,SPECIALIZED_EXPERIENCE,routed to stage 2 but historical HR,,,0
+G133,STUDENT_ELIGIBILITY,gate HIGH REJECT,1,1,0
+G128,STUDENT_ELIGIBILITY,routed to stage 2 but historical HR,,,0
+G072,REQUIRED_EXPERIENCE,gate HIGH REJECT,1,1,0
+G106,SPECIALIZED_EXPERIENCE,routed to stage 2 but historical HR,,,0
+G066,REQUIRED_EXPERIENCE,gate HIGH REJECT,1,1,0
+G100,SPECIALIZED_EXPERIENCE,routed to stage 2 but historical HR|<=2-year experience wording,,,0
+G105,SPECIALIZED_EXPERIENCE,routed to stage 2 but historical HR|<=2-year experience wording,,,0
+G073,REQUIRED_EXPERIENCE,routed to stage 2 but historical HR,,,0
+G038,REJECT_NO_HR,<=2-year experience wording,,,0
+G042,REJECT_NO_HR,<=2-year experience wording,,,0
+G136,STUDENT_ELIGIBILITY,gate HIGH REJECT|<=2-year experience wording,1,1,0
+G065,REQUIRED_EXPERIENCE,gate HIGH REJECT,1,1,0
+G130,STUDENT_ELIGIBILITY,gate HIGH REJECT|<=2-year experience wording,1,1,0
+G060,REQUIRED_EXPERIENCE,gate HIGH REJECT|<=2-year experience wording,1,1,0
+G043,REJECT_NO_HR,<=2-year experience wording,,,0
+G129,STUDENT_ELIGIBILITY,gate HIGH REJECT,1,1,0
+G126,LANGUAGE,routed to stage 2 but historical HR|French mention / French text,,,0
+G067,REQUIRED_EXPERIENCE,gate HIGH REJECT,1,1,0
+G138,MANDATORY_QUALIFICATION,routed to stage 2 but historical HR,,,0
+G142,MANDATORY_QUALIFICATION,gate HIGH REJECT|gate type != historical type,1,1,0
+G061,REQUIRED_EXPERIENCE,gate HIGH REJECT,1,1,0
+G139,MANDATORY_QUALIFICATION,gate HIGH REJECT|gate type != historical type,1,1,0
+G150,UNABLE,Senior/Lead/Manager only in title,,,0
+G046,REJECT_NO_HR,French mention / French text|Senior/Lead/Manager only in title,,,0
+G036,REJECT_NO_HR,Senior/Lead/Manager only in title,,,0
+G075,REQUIRED_EXPERIENCE,gate HIGH REJECT,1,1,0
+G125,LANGUAGE,gate HIGH REJECT|French mention / French text|<=2-year experience wording,1,1,0
+G082,REQUIRED_EXPERIENCE,gate HIGH REJECT,1,1,0
+G120,LANGUAGE,gate HIGH REJECT|French mention / French text,1,1,0
+G055,REJECT_NO_HR,<=2-year experience wording,,,0
+G141,MANDATORY_QUALIFICATION,routed to stage 2 but historical HR,,,0
+G062,REQUIRED_EXPERIENCE,routed to stage 2 but historical HR|<=2-year experience wording|Senior/Lead/Manager only in title,,,0
+G102,SPECIALIZED_EXPERIENCE,routed to stage 2 but historical HR|French mention / French text,,,0
+G101,SPECIALIZED_EXPERIENCE,routed to stage 2 but historical HR|French mention / French text|<=2-year experience wording,,,0
+G091,SENIORITY,gate HIGH REJECT,1,1,0
+G077,REQUIRED_EXPERIENCE,gate HIGH REJECT,1,1,0
+G116,LANGUAGE,routed to stage 2 but historical HR|French mention / French text|gate failed,,,0
+G090,SENIORITY,gate HIGH REJECT|gate type != historical type|French mention / French text|<=2-year experience wording,1,1,0
+G114,LANGUAGE,gate HIGH REJECT|French mention / French text,1,1,0
+G051,REJECT_NO_HR,<=2-year experience wording,,,0
+G086,SENIORITY,gate HIGH REJECT|gate type != historical type,1,1,0
+G134,STUDENT_ELIGIBILITY,gate HIGH REJECT,1,1,0
+G108,SPECIALIZED_EXPERIENCE,routed to stage 2 but historical HR,,,0
+G099,SPECIALIZED_EXPERIENCE,routed to stage 2 but historical HR,,,0
+G121,LANGUAGE,gate HIGH REJECT|French mention / French text|<=2-year experience wording,1,1,0
+G078,REQUIRED_EXPERIENCE,gate HIGH REJECT|<=2-year experience wording|Senior/Lead/Manager only in title,1,1,0
+G107,SPECIALIZED_EXPERIENCE,routed to stage 2 but historical HR,,,0
+G070,REQUIRED_EXPERIENCE,gate HIGH REJECT|Senior/Lead/Manager only in title,1,1,0
+G119,LANGUAGE,gate HIGH REJECT|French mention / French text|<=2-year experience wording,1,1,0
+G104,SPECIALIZED_EXPERIENCE,routed to stage 2 but historical HR|<=2-year experience wording,,,0
+G112,SPECIALIZED_EXPERIENCE,routed to stage 2 but historical HR,,,0
+G076,REQUIRED_EXPERIENCE,gate HIGH REJECT,1,1,0
+G117,LANGUAGE,gate HIGH REJECT|French mention / French text,1,1,0
+G135,STUDENT_ELIGIBILITY,gate HIGH REJECT,1,1,0
+G074,REQUIRED_EXPERIENCE,gate HIGH REJECT,1,1,0
+G140,MANDATORY_QUALIFICATION,gate HIGH REJECT|gate type != historical type,1,1,0
+G081,REQUIRED_EXPERIENCE,gate HIGH REJECT|<=2-year experience wording,1,1,0
+G123,LANGUAGE,gate HIGH REJECT|French mention / French text|<=2-year experience wording,1,1,0
+G094,SENIORITY,gate HIGH REJECT|gate type != historical type|French mention / French text|<=2-year experience wording,1,1,0
+G131,STUDENT_ELIGIBILITY,gate HIGH REJECT|<=2-year experience wording,1,1,0
+G124,LANGUAGE,routed to stage 2 but historical HR|French mention / French text,,,0
+G111,SPECIALIZED_EXPERIENCE,routed to stage 2 but historical HR,,,0
+G093,SENIORITY,routed to stage 2 but historical HR,,,0
+G089,SENIORITY,routed to stage 2 but historical HR|<=2-year experience wording,,,0
+G087,SENIORITY,routed to stage 2 but historical HR,,,0
+G056,REJECT_NO_HR,French mention / French text|<=2-year experience wording,,,0
+G050,REJECT_NO_HR,French mention / French text|<=2-year experience wording,,,0
+G084,SENIORITY,routed to stage 2 but historical HR,,,0
+G069,REQUIRED_EXPERIENCE,routed to stage 2 but historical HR,,,0
+G149,UNABLE,Senior/Lead/Manager only in title,,,0
+G088,SENIORITY,gate HIGH REJECT|<=2-year experience wording,1,1,0
+G063,REQUIRED_EXPERIENCE,gate HIGH REJECT,1,1,0
+G145,MANDATORY_QUALIFICATION,gate HIGH REJECT|gate type != historical type,1,1,0
+G071,REQUIRED_EXPERIENCE,routed to stage 2 but historical HR|<=2-year experience wording,,,0
+G147,UNABLE,Senior/Lead/Manager only in title,,,0
+G092,SENIORITY,gate HIGH REJECT,1,1,0
+G122,LANGUAGE,gate HIGH REJECT|French mention / French text|<=2-year experience wording,1,1,0
+G058,REQUIRED_EXPERIENCE,routed to stage 2 but historical HR|<=2-year experience wording,,,0
+G110,SPECIALIZED_EXPERIENCE,routed to stage 2 but historical HR,,,0
+G041,REJECT_NO_HR,30-job final decision differs,,,0

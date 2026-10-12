@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="470" viewBox="0 0 960 470" role="img" aria-labelledby="t d">
+<title id="t">Two-stage gate: where the cost goes</title>
+<desc id="d">Per call, writing the posting to the prompt cache costs $0.0226 in the gate and $0.0225 in the full screen. Estimated cost per posting on the production mix: single stage $0.0367, two stage $0.0481.</desc>
+<style>
+  text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; fill: #0b0b0b; }
+  .bg { fill: #fcfcfb; } .mu { fill: #52514e; font-size: 13px; } .lb { font-size: 14px; }
+  .hd { font-size: 15px; font-weight: 600; } .t1 { font-size: 19px; font-weight: 700; }
+  .val { font-size: 13px; font-weight: 600; } .in { fill: #ffffff; font-size: 12px; font-weight: 600; }
+  .s1 { fill: #2a78d6; } .s2 { fill: #eb6834; } .s3 { fill: #8a8986; } .s4 { fill: #52514e; }
+  .grid { stroke: #e5e4e0; stroke-width: 1; } .gap { stroke: #fcfcfb; stroke-width: 2; }
+  @media (prefers-color-scheme: dark) {
+    text { fill: #ffffff; } .bg { fill: #1a1a19; } .mu { fill: #c3c2b7; } .in { fill: #ffffff; }
+    .s1 { fill: #3987e5; } .s2 { fill: #d95926; } .s3 { fill: #6f6e6a; } .s4 { fill: #a3a29d; }
+    .grid { stroke: #383835; } .gap { stroke: #1a1a19; }
+  }
+</style>
+<rect class="bg" width="960" height="470" rx="8"/>
+<text class="t1" x="24" y="36">Two-stage gate: where the cost goes</text>
+<text class="mu" x="24" y="58">Measured warm calls, decomposed with per-token prices fitted to the reported costs. Bottom panel is an estimate (production mix).</text>
+<text class="hd" x="24" y="96">Per call</text>
+<line class="grid" x1="230.0" y1="108" x2="230.0" y2="236"/>
+<text class="mu" x="230.0" y="252" text-anchor="middle">$0.00</text>
+<line class="grid" x1="356.0" y1="108" x2="356.0" y2="236"/>
+<text class="mu" x="356.0" y="252" text-anchor="middle">$0.01</text>
+<line class="grid" x1="482.0" y1="108" x2="482.0" y2="236"/>
+<text class="mu" x="482.0" y="252" text-anchor="middle">$0.02</text>
+<line class="grid" x1="608.0" y1="108" x2="608.0" y2="236"/>
+<text class="mu" x="608.0" y="252" text-anchor="middle">$0.03</text>
+<line class="grid" x1="734.0" y1="108" x2="734.0" y2="236"/>
+<text class="mu" x="734.0" y="252" text-anchor="middle">$0.04</text>
+<line class="grid" x1="860.0" y1="108" x2="860.0" y2="236"/>
+<text class="mu" x="860.0" y="252" text-anchor="middle">$0.05</text>
+<text class="lb" x="24" y="131">Gate</text>
+<text class="mu" x="24" y="148">n = 150 warm calls</text>
+<rect class="s1 gap" x="230.0" y="116" width="284.8" height="34" rx="3"><title>Gate: write posting to cache $0.0226</title></rect>
+<text class="in" x="372.4" y="138" text-anchor="middle">$0.0226</text>
+<rect class="s3 gap" x="514.8" y="116" width="17.3" height="34" rx="3"><title>Gate: read cached rules $0.0014</title></rect>
+<rect class="s2 gap" x="532.1" y="116" width="82.4" height="34" rx="3"><title>Gate: output $0.0065</title></rect>
+<text class="in" x="573.3" y="138" text-anchor="middle">$0.0065</text>
+<text class="val" x="622.5" y="138">$0.0305</text>
+<text class="lb" x="24" y="191">Full screen (stage 2)</text>
+<text class="mu" x="24" y="208">n = 18 warm calls</text>
+<rect class="s1 gap" x="230.0" y="176" width="283.4" height="34" rx="3"><title>Full screen (stage 2): write posting to cache $0.0225</title></rect>
+<text class="in" x="371.7" y="198" text-anchor="middle">$0.0225</text>
+<rect class="s3 gap" x="513.4" y="176" width="31.3" height="34" rx="3"><title>Full screen (stage 2): read cached rules $0.0025</title></rect>
+<rect class="s2 gap" x="544.7" y="176" width="276.9" height="34" rx="3"><title>Full screen (stage 2): output $0.0220</title></rect>
+<text class="in" x="683.2" y="198" text-anchor="middle">$0.0220</text>
+<text class="val" x="829.6" y="198">$0.0469</text>
+<rect class="s1" x="230" y="259" width="12" height="12" rx="2"/><text class="mu" x="248" y="270">Write posting to cache</text>
+<rect class="s3" x="430" y="259" width="12" height="12" rx="2"/><text class="mu" x="448" y="270">Read cached rules</text>
+<rect class="s2" x="630" y="259" width="12" height="12" rx="2"/><text class="mu" x="648" y="270">Output</text>
+<text class="hd" x="24" y="318">Per posting, production mix (estimate)</text>
+<line class="grid" x1="230.0" y1="330" x2="230.0" y2="438"/>
+<text class="mu" x="230.0" y="454" text-anchor="middle">$0.00</text>
+<line class="grid" x1="356.0" y1="330" x2="356.0" y2="438"/>
+<text class="mu" x="356.0" y="454" text-anchor="middle">$0.01</text>
+<line class="grid" x1="482.0" y1="330" x2="482.0" y2="438"/>
+<text class="mu" x="482.0" y="454" text-anchor="middle">$0.02</text>
+<line class="grid" x1="608.0" y1="330" x2="608.0" y2="438"/>
+<text class="mu" x="608.0" y="454" text-anchor="middle">$0.03</text>
+<line class="grid" x1="734.0" y1="330" x2="734.0" y2="438"/>
+<text class="mu" x="734.0" y="454" text-anchor="middle">$0.04</text>
+<line class="grid" x1="860.0" y1="330" x2="860.0" y2="438"/>
+<text class="mu" x="860.0" y="454" text-anchor="middle">$0.05</text>
+<text class="lb" x="24" y="353">Single stage</text>
+<text class="mu" x="24" y="370">current design</text>
+<rect class="s4 gap" x="230.0" y="338" width="462.4" height="34" rx="3"><title>Single stage: single-stage screen $0.0367</title></rect>
+<text class="val" x="700.4" y="360">$0.0367</text>
+<text class="lb" x="24" y="405">Two stage</text>
+<text class="mu" x="24" y="422">gate + 43% sent on</text>
+<rect class="s3 gap" x="230.0" y="390" width="384.5" height="34" rx="3"><title>Two stage: gate call $0.0305</title></rect>
+<text class="in" x="422.3" y="412" text-anchor="middle">gate $0.0305</text>
+<rect class="s4 gap" x="614.5" y="390" width="221.8" height="34" rx="3"><title>Two stage: stage 2 for routed postings $0.0176</title></rect>
+<text class="in" x="725.4" y="412" text-anchor="middle">stage 2 $0.0176</text>
+<text class="val" x="844.3" y="412">$0.0481</text>
+<text class="val" x="916.3" y="412">+31%</text>
+</svg>

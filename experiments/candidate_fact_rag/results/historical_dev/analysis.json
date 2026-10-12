@@ -1,0 +1,345 @@
+{
+  "n_jobs": 6,
+  "generations": 30,
+  "arms": {
+    "L": {
+      "generations": 6,
+      "jobs": 6,
+      "first_pass": 6,
+      "retries": 0,
+      "total_input_mean_rep0": 52083.333333333336,
+      "cost_mean_all": 0.42540113333333335,
+      "latency_median_all_ms": 33630.0,
+      "output_mean": 3432.3333333333335,
+      "thinking_mean": 1558.6666666666667,
+      "turns": [
+        "6"
+      ],
+      "severe_auto_rep0": 1.0,
+      "major_auto_all": 0.0,
+      "unknown_share_mean": 0.4443656274925625,
+      "citation_valid_rate_mean": null
+    },
+    "A": {
+      "generations": 9,
+      "jobs": 6,
+      "first_pass": 9,
+      "retries": 0,
+      "total_input_mean_rep0": 46698.166666666664,
+      "cost_mean_all": 0.15987493333333333,
+      "latency_median_all_ms": 43827.0,
+      "output_mean": 4844.777777777777,
+      "thinking_mean": 2906.6666666666665,
+      "turns": [
+        "1"
+      ],
+      "severe_auto_rep0": 0.0,
+      "major_auto_all": 2.0,
+      "unknown_share_mean": 0.3309065113500597,
+      "citation_valid_rate_mean": 1.0
+    },
+    "B": {
+      "generations": 9,
+      "jobs": 6,
+      "first_pass": 9,
+      "retries": 0,
+      "total_input_mean_rep0": 15052.166666666666,
+      "cost_mean_all": 0.1627735111111111,
+      "latency_median_all_ms": 34266.0,
+      "output_mean": 4000.5555555555557,
+      "thinking_mean": 2120.8888888888887,
+      "turns": [
+        "1"
+      ],
+      "severe_auto_rep0": 0.0,
+      "major_auto_all": 3.0,
+      "unknown_share_mean": 0.3408062140317751,
+      "citation_valid_rate_mean": 1.0
+    },
+    "B_prime": {
+      "generations": 6,
+      "jobs": 6,
+      "first_pass": 6,
+      "retries": 0,
+      "total_input_mean_rep0": 16995.333333333332,
+      "cost_mean_all": 0.2189313333333333,
+      "latency_median_all_ms": 36670.5,
+      "output_mean": 4148.833333333333,
+      "thinking_mean": 2287.3333333333335,
+      "turns": [
+        "1"
+      ],
+      "severe_auto_rep0": 0.0,
+      "major_auto_all": 0.0,
+      "unknown_share_mean": 0.33205824232312,
+      "citation_valid_rate_mean": 1.0
+    }
+  },
+  "context_reduction_vs_A": {
+    "B": 0.6776711434067719,
+    "B_prime": 0.6360599452512412
+  },
+  "cache_states": [
+    {
+      "arm": "L",
+      "cache_state": "cold",
+      "kind": "first generation",
+      "n": 6,
+      "cost_mean": 0.42540113333333335,
+      "latency_median_ms": 33630.0,
+      "cache_write_mean": 44400.333333333336,
+      "cache_read_mean": 7679.0
+    },
+    {
+      "arm": "A",
+      "cache_state": "cold",
+      "kind": "first generation",
+      "n": 1,
+      "cost_mean": 0.46414,
+      "latency_median_ms": 43827.0,
+      "cache_write_mean": 45894.0,
+      "cache_read_mean": 0.0
+    },
+    {
+      "arm": "A",
+      "cache_state": "warm",
+      "kind": "first generation",
+      "n": 5,
+      "cost_mean": 0.1302008,
+      "latency_median_ms": 47744.0,
+      "cache_write_mean": 2856.6,
+      "cache_read_mean": 44000.0
+    },
+    {
+      "arm": "A",
+      "cache_state": "warm",
+      "kind": "same-job repeat",
+      "n": 3,
+      "cost_mean": 0.10791013333333332,
+      "latency_median_ms": 43807.0,
+      "cache_write_mean": 572.3333333333334,
+      "cache_read_mean": 45984.0
+    },
+    {
+      "arm": "B",
+      "cache_state": "cold",
+      "kind": "first generation",
+      "n": 6,
+      "cost_mean": 0.20161266666666666,
+      "latency_median_ms": 35331.0,
+      "cache_write_mean": 15050.166666666666,
+      "cache_read_mean": 0.0
+    },
+    {
+      "arm": "B",
+      "cache_state": "warm",
+      "kind": "same-job repeat",
+      "n": 3,
+      "cost_mean": 0.0850952,
+      "latency_median_ms": 33352.0,
+      "cache_write_mean": 572.0,
+      "cache_read_mean": 14422.666666666666
+    },
+    {
+      "arm": "B_prime",
+      "cache_state": "cold",
+      "kind": "first generation",
+      "n": 6,
+      "cost_mean": 0.2189313333333333,
+      "latency_median_ms": 36670.5,
+      "cache_write_mean": 16993.333333333332,
+      "cache_read_mean": 0.0
+    }
+  ],
+  "paired_vs_A": {
+    "B": {
+      "rows": [
+        {
+          "sample_id": "D1",
+          "A_cache": "cold",
+          "cost_diff": -0.283408,
+          "latency_diff_ms": -12844.0
+        },
+        {
+          "sample_id": "D2",
+          "A_cache": "warm",
+          "cost_diff": 0.09479599999999998,
+          "latency_diff_ms": 955.0
+        },
+        {
+          "sample_id": "D3",
+          "A_cache": "warm",
+          "cost_diff": 0.07846799999999998,
+          "latency_diff_ms": -4709.0
+        },
+        {
+          "sample_id": "D4",
+          "A_cache": "warm",
+          "cost_diff": 0.089144,
+          "latency_diff_ms": -1155.0
+        },
+        {
+          "sample_id": "D5",
+          "A_cache": "warm",
+          "cost_diff": 0.056083999999999995,
+          "latency_diff_ms": -13591.0
+        },
+        {
+          "sample_id": "D6",
+          "A_cache": "warm",
+          "cost_diff": 0.059448,
+          "latency_diff_ms": -16055.0
+        }
+      ],
+      "cost_diff_when_A_warm_mean": 0.07558799999999999,
+      "cost_diff_when_A_warm_boot95": [
+        0.06190639999999999,
+        0.08926959999999999
+      ],
+      "n_A_warm_jobs": 5,
+      "cost_diff_when_A_cold": [
+        -0.283408
+      ],
+      "latency_diff_mean_ms": -7899.833333333333,
+      "latency_diff_mean_boot95_ms": [
+        -13093.016666666666,
+        -2640.5
+      ],
+      "latency_diff_median_ms": -8776.5,
+      "latency_diff_range_ms": [
+        -16055.0,
+        955.0
+      ],
+      "jobs_faster": 5
+    },
+    "B_prime": {
+      "rows": [
+        {
+          "sample_id": "D1",
+          "A_cache": "cold",
+          "cost_diff": -0.26003600000000004,
+          "latency_diff_ms": -9622.0
+        },
+        {
+          "sample_id": "D2",
+          "A_cache": "warm",
+          "cost_diff": 0.105864,
+          "latency_diff_ms": 1601.0
+        },
+        {
+          "sample_id": "D3",
+          "A_cache": "warm",
+          "cost_diff": 0.09107599999999999,
+          "latency_diff_ms": -7221.0
+        },
+        {
+          "sample_id": "D4",
+          "A_cache": "warm",
+          "cost_diff": 0.10170399999999999,
+          "latency_diff_ms": -2668.0
+        },
+        {
+          "sample_id": "D5",
+          "A_cache": "warm",
+          "cost_diff": 0.06742799999999996,
+          "latency_diff_ms": -14207.0
+        },
+        {
+          "sample_id": "D6",
+          "A_cache": "warm",
+          "cost_diff": 0.09240799999999999,
+          "latency_diff_ms": -10822.0
+        }
+      ],
+      "cost_diff_when_A_warm_mean": 0.09169599999999999,
+      "cost_diff_when_A_warm_boot95": [
+        0.07901279999999997,
+        0.1020744
+      ],
+      "n_A_warm_jobs": 5,
+      "cost_diff_when_A_cold": [
+        -0.26003600000000004
+      ],
+      "latency_diff_mean_ms": -7156.5,
+      "latency_diff_mean_boot95_ms": [
+        -11150.333333333334,
+        -2715.3333333333335
+      ],
+      "latency_diff_median_ms": -8421.5,
+      "latency_diff_range_ms": [
+        -14207.0,
+        1601.0
+      ],
+      "jobs_faster": 5
+    }
+  },
+  "sequential_batch_model_EST": {
+    "_doc": "Cost of N jobs generated back to back within the cache TTL: A = cold + warm * (N - 1); B = cold_B * N. Derived from measured means; concurrent cold starts may duplicate cache writes, and parallel cache behavior was not evaluated.",
+    "A_cold": 0.46414,
+    "A_warm": 0.1218418,
+    "B_cold": {
+      "B": 0.20161266666666666,
+      "B_prime": 0.2189313333333333
+    },
+    "smallest_N_where_A_is_cheaper": {
+      "B": 5,
+      "B_prime": 4
+    }
+  },
+  "retrieval_proxy": {
+    "B_v1": {
+      "L_or_A_project_in_context": [
+        6,
+        12
+      ],
+      "evidence_tokens_est_mean": 4047.0,
+      "projects_in_context": 3,
+      "retrieval_insufficient": 1,
+      "retrieval_ms_per_job_range": [
+        114.7,
+        165.0
+      ],
+      "one_time_index_ms": 859.01,
+      "jobs_where_L_and_A_chose_same_project_absent": [
+        "D2",
+        "D6"
+      ]
+    },
+    "B_prime_v2": {
+      "L_or_A_project_in_context": [
+        9,
+        12
+      ],
+      "evidence_tokens_est_mean": 5271.5,
+      "projects_in_context": 8,
+      "retrieval_insufficient": 0,
+      "retrieval_ms_per_job_range": [
+        112.24,
+        160.9
+      ],
+      "one_time_index_ms": 884.04,
+      "jobs_where_L_and_A_chose_same_project_absent": [
+        "D2"
+      ]
+    }
+  },
+  "historical_L_production_telemetry": {
+    "_doc": "Earlier production Read-agent V1 worker, read-only telemetry. Different jobs and days from the dev run; never paired with it.",
+    "calls": 44,
+    "valid": 34,
+    "invalid": 10,
+    "cost_mean_usd": 0.4187,
+    "latency_median_ms": 35625.0,
+    "latency_p90_ms": 40815.4,
+    "turns_median": 6.0
+  },
+  "spend_ledger_usd": {
+    "total_reported": 6.8285,
+    "budget_cap": 20.0,
+    "preflight": 0.0586,
+    "A": 1.4389,
+    "L": 2.5524,
+    "B": 2.7785,
+    "_doc": "CLI-reported list-price equivalent, not subscription cash. 'B' includes B and B_prime."
+  }
+}

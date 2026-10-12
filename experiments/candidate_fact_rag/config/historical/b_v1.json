@@ -1,0 +1,85 @@
+{
+  "_doc": "Parameters of the historical B run (run1): 3 projects. Values copied from the private experiment; per-employer quotas are expressed by experience order. On the small fictional corpus every project fits, so this file documents the configuration rather than reproducing its behaviour.",
+  "index_keyword_tags": true,
+  "bm25": {
+    "k1": 1.4,
+    "b": 0.75
+  },
+  "embedding": {
+    "backend": "tfidf_lsa",
+    "params": {
+      "dim": 128,
+      "seed": 13
+    }
+  },
+  "fusion": {
+    "method": "weighted",
+    "bm25_weight": 0.5,
+    "rrf_k": 60
+  },
+  "aggregate": {
+    "top_m": 3,
+    "mean_top_weight": 0.3
+  },
+  "queries": {
+    "query_type_weights": {
+      "requirement": 1.0,
+      "responsibility": 1.0,
+      "skill": 0.8,
+      "preferred": 0.6,
+      "business": 0.4,
+      "title": 0.7
+    },
+    "max_queries_per_type": {
+      "requirement": 25,
+      "responsibility": 25,
+      "skill": 30,
+      "preferred": 12,
+      "business": 8,
+      "title": 1
+    },
+    "max_skill_queries": 30
+  },
+  "selection": {
+    "experience_quota": {
+      "min": 4,
+      "max": 5
+    },
+    "n_projects": 3,
+    "per_project_facts": [
+      6,
+      4,
+      3
+    ],
+    "project_low_value_types": [
+      "conceptual_note",
+      "workflow_step",
+      "project_context",
+      "proposed_design",
+      "team_role",
+      "proposed_not_executed"
+    ],
+    "project_excluded_types": [
+      "conceptual_note"
+    ],
+    "min_fact_score": 0.05,
+    "dedup_jaccard": 0.6,
+    "evidence_token_budget": 6000,
+    "cover_threshold": 0.35,
+    "max_lost_supportable_ratio": 0.25,
+    "vocabulary": {
+      "include_core": true,
+      "ats_mode": "jd_matched"
+    },
+    "experience_quota_by_order": [
+      {
+        "min": 4,
+        "max": 6
+      },
+      {
+        "min": 4,
+        "max": 5
+      }
+    ]
+  }
+}

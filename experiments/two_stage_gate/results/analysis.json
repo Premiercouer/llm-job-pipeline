@@ -1,0 +1,310 @@
+{
+  "calls": {
+    "gate": 151,
+    "stage2": 19,
+    "total": 170,
+    "retries": 0,
+    "parse_failures": 1,
+    "max_num_turns": 1,
+    "models": [
+      "claude-opus-5-5"
+    ],
+    "gate_cached_prefix_tokens": [
+      6838
+    ],
+    "stage2_cached_prefix_tokens": [
+      12373
+    ],
+    "total_cost_usd": 5.6782948
+  },
+  "quality": {
+    "sampled_postings": 150,
+    "routing": {
+      "PASS": 25,
+      "UNCERTAIN": 69,
+      "REJECT": 55,
+      "PARSE_FAILED": 1
+    },
+    "ended_by_gate": 55,
+    "sent_to_stage2": 95,
+    "sample_stage2_share": 0.6333333333333333,
+    "ended_with_historical_hard_reject": 55,
+    "historical_accepts": 35,
+    "historical_accepts_ended_by_gate": 0,
+    "historical_accepts_ended_wilson95": [
+      0.0,
+      0.09890426758938868
+    ],
+    "reviewed_cases": 139,
+    "reviewed_rejects": 55,
+    "reviewed_rejects_judged_correct": 55,
+    "reviewed_rejects_correct_wilson95": [
+      0.9347128562105721,
+      0.9999999999999999
+    ],
+    "anchor_supports_reject": 55,
+    "true_accepts_false_rejected": 0,
+    "by_stratum": {
+      "ACCEPT": {
+        "n": 35,
+        "ended": 0
+      },
+      "MANDATORY_QUALIFICATION": {
+        "n": 8,
+        "ended": 4
+      },
+      "REJECT_NO_HR": {
+        "n": 22,
+        "ended": 0
+      },
+      "SPECIALIZED_EXPERIENCE": {
+        "n": 15,
+        "ended": 0
+      },
+      "LANGUAGE": {
+        "n": 15,
+        "ended": 12
+      },
+      "REQUIRED_EXPERIENCE": {
+        "n": 25,
+        "ended": 19
+      },
+      "SENIORITY": {
+        "n": 15,
+        "ended": 11
+      },
+      "STUDENT_ELIGIBILITY": {
+        "n": 10,
+        "ended": 9
+      },
+      "UNABLE": {
+        "n": 5,
+        "ended": 0
+      }
+    }
+  },
+  "prices_fitted": {
+    "cache_write_per_mtok": 8.000882249157902,
+    "cache_read_per_mtok": 0.2009438165924378,
+    "output_per_mtok": 19.995963806129577,
+    "max_abs_residual_usd": 5.4746536114688715e-06
+  },
+  "per_call": {
+    "gate_warm": {
+      "n": 150,
+      "posting_cache_write_usd": 0.022601638926431165,
+      "rules_cache_read_usd": 0.0013740538178590896,
+      "output_usd": 0.006540413148134236,
+      "total_usd": 0.03051648,
+      "posting_write_share": 0.7406371549546725
+    },
+    "stage2_warm": {
+      "n": 18,
+      "posting_cache_write_usd": 0.02249225797621601,
+      "rules_cache_read_usd": 0.0024862778426982327,
+      "output_usd": 0.021972231562302047,
+      "total_usd": 0.04694904444444445,
+      "posting_write_share": 0.4790780779964852
+    }
+  },
+  "usage": {
+    "gate_warm": {
+      "cache_creation_input_tokens": {
+        "mean": 2824.8933333333334,
+        "median": 2800.0,
+        "p90": 3796.0
+      },
+      "cache_read_input_tokens": {
+        "mean": 6838.0,
+        "median": 6838.0,
+        "p90": 6838.0
+      },
+      "output_tokens": {
+        "mean": 327.08666666666664,
+        "median": 308.5,
+        "p90": 529.0
+      },
+      "thinking_tokens": {
+        "mean": 131.04666666666665,
+        "median": 117.5,
+        "p90": 335.29999999999995
+      },
+      "duration_ms": {
+        "mean": 6987.466666666666,
+        "median": 6742.0,
+        "p90": 9160.4
+      },
+      "total_cost_usd": {
+        "mean": 0.03051648,
+        "median": 0.0300136,
+        "p90": 0.040236799999999996
+      },
+      "input_side_tokens": {
+        "mean": 9664.893333333333,
+        "median": 9640.0,
+        "p90": 10636.0
+      },
+      "n": 150
+    },
+    "stage2_warm": {
+      "cache_creation_input_tokens": {
+        "mean": 2811.222222222222,
+        "median": 2916.5,
+        "p90": 3478.3
+      },
+      "cache_read_input_tokens": {
+        "mean": 12373.0,
+        "median": 12373.0,
+        "p90": 12373.0
+      },
+      "output_tokens": {
+        "mean": 1098.8333333333333,
+        "median": 1168.0,
+        "p90": 1479.0
+      },
+      "thinking_tokens": {
+        "mean": 432.77777777777777,
+        "median": 425.0,
+        "p90": 755.2
+      },
+      "duration_ms": {
+        "mean": 12942.0,
+        "median": 12551.5,
+        "p90": 17085.100000000002
+      },
+      "total_cost_usd": {
+        "mean": 0.04694904444444445,
+        "median": 0.048264600000000005,
+        "p90": 0.058345400000000006
+      },
+      "input_side_tokens": {
+        "mean": 15186.222222222223,
+        "median": 15291.5,
+        "p90": 15853.300000000001
+      },
+      "n": 18
+    },
+    "gate_cold": {
+      "cache_creation_input_tokens": {
+        "mean": 11008.0,
+        "median": 11008.0,
+        "p90": 11008.0
+      },
+      "cache_read_input_tokens": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p90": 0.0
+      },
+      "output_tokens": {
+        "mean": 391.0,
+        "median": 391.0,
+        "p90": 391.0
+      },
+      "thinking_tokens": {
+        "mean": 199.0,
+        "median": 199.0,
+        "p90": 199.0
+      },
+      "duration_ms": {
+        "mean": 6229.0,
+        "median": 6229.0,
+        "p90": 6229.0
+      },
+      "total_cost_usd": {
+        "mean": 0.095892,
+        "median": 0.095892,
+        "p90": 0.095892
+      },
+      "input_side_tokens": {
+        "mean": 11010.0,
+        "median": 11010.0,
+        "p90": 11010.0
+      },
+      "n": 1
+    },
+    "stage2_cold": {
+      "cache_creation_input_tokens": {
+        "mean": 15975.0,
+        "median": 15975.0,
+        "p90": 15975.0
+      },
+      "cache_read_input_tokens": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p90": 0.0
+      },
+      "output_tokens": {
+        "mean": 1602.0,
+        "median": 1602.0,
+        "p90": 1602.0
+      },
+      "thinking_tokens": {
+        "mean": 774.0,
+        "median": 774.0,
+        "p90": 774.0
+      },
+      "duration_ms": {
+        "mean": 17801.0,
+        "median": 17801.0,
+        "p90": 17801.0
+      },
+      "total_cost_usd": {
+        "mean": 0.159848,
+        "median": 0.159848,
+        "p90": 0.159848
+      },
+      "input_side_tokens": {
+        "mean": 15977.0,
+        "median": 15977.0,
+        "p90": 15977.0
+      },
+      "n": 1
+    }
+  },
+  "bootstrap95": {
+    "gate_warm_cost": [
+      0.02921427,
+      0.031824231333333335
+    ],
+    "stage2_warm_cost": [
+      0.04169497777777778,
+      0.05149613333333333
+    ]
+  },
+  "per_posting": {
+    "single_stage_baseline_usd": 0.0436,
+    "sample_formula_two_stage_usd": 0.060250874814814816,
+    "sample_formula_change": 0.381900798504927,
+    "production_mix_stage2_share_EST": 0.4261948717948718,
+    "production_mix_single_stage_usd_EST": 0.03670153846153846,
+    "production_mix_two_stage_usd_EST": 0.04812103384615385,
+    "production_mix_change_EST": 0.31114486921529183,
+    "input_side_tokens_sample_formula": 19282.834074074075,
+    "latency_ms_production_mix_EST": 12503.280697435897
+  },
+  "break_even": {
+    "single_stage_cost_of_gate_ended_postings_usd_EST": 0.033281306974582626,
+    "max_stage2_share_to_break_even_EST": 0.08307447110458022,
+    "max_saving_if_gate_ended_everything_EST": 0.08307447110458022,
+    "naive_max_stage2_share_vs_average_baseline": 0.30008073394495416,
+    "gate_cost_to_break_even_on_production_mix_usd_EST": 0.019096984615384612,
+    "gate_cost_for_20pct_saving_on_production_mix_usd_EST": 0.011756676923076921
+  },
+  "end_to_end": {
+    "n": 30,
+    "ended_by_gate": 11,
+    "decision_agrees_with_history": 28,
+    "historical_accepts_still_accepted": [
+      9,
+      10
+    ],
+    "cost_total_usd": 1.9597988,
+    "cost_per_posting_usd": 0.06532662666666667,
+    "cost_per_posting_ci95": [
+      0.05365888766666667,
+      0.07883960883333334
+    ],
+    "cost_per_posting_excl_stage2_cold_start_usd": 0.06156332814814815,
+    "single_stage_counterfactual_per_posting_usd_EST": 0.042001061481481486
+  }
+}

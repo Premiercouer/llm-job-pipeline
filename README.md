@@ -27,7 +27,8 @@ state, files, validation, retries, deduplication and spend.
 
 ## Results at a glance
 
-Measured on the author's own daily runs (personal scale, 9 days of production use):
+Measured on the author's own daily runs (personal scale, 9 days of production use; see
+[Real-world operation](#real-world-operation)):
 
 | | |
 |---|---|
@@ -38,9 +39,29 @@ Measured on the author's own daily runs (personal scale, 9 days of production us
 | Schema / evidence-check failures on first attempt | **0 / 121** requests |
 | Accepted jobs that ended with a one-page tailored resume | **240 / 245** |
 | Resume generation cost per job, after redesign (n = 8) | **−65%** ($1.17 → $0.41) |
-| Design rejected on measurement: two-stage screening gate | **+31% cost** despite 0 false rejects → not shipped ([case study](#case-study-a-design-rejected-on-measurement)) |
 
 Details and caveats: [Evaluation](#evaluation).
+
+### Evaluated alternatives (not adopted)
+
+Two designs were built or run against real data and then kept out of production on the evidence.
+Each conclusion applies to its own test configuration and workload; full case studies with data,
+code and reproduction steps are in [`experiments/`](experiments/).
+
+| Alternative | Result | Decision |
+|---|---|---|
+| [Two-stage screening gate](experiments/two_stage_gate/README.md): a short hard-reject call before the full screen | No false rejects observed in the sample, but cost per posting about **+31%** on the production mix (estimated): each routed posting is written to the prompt cache twice | keep single stage |
+| [Candidate-fact RAG](experiments/candidate_fact_rag/README.md): BM25 + TF-IDF/LSA retrieval of resume facts, with cited fact IDs | On a 6-job dev run, context **−64–68%** and ~7–8 s faster, but more expensive in back-to-back batches (the full-text prompt is cached) and relevant evidence was left out | keep full text |
+
+## Real-world operation
+
+The pipeline was used for a real job search on one local machine: 2,846 postings screened over 9
+run days, 6.3% of unique postings accepted. [Operational experience](docs/operational_experience.md)
+records what that looked like in practice: one batch blocked by an unparseable answer and recovered
+by rerunning only that batch, resume outputs that failed structural validation, a targeted
+re-screen after a rule change, where a person steps in, how the design changed, and what is still
+open. It separates measured counts from inferences; costs there are CLI-reported list-price
+equivalents.
 
 ## Architecture
 
@@ -48,15 +69,19 @@ Details and caveats: [Evaluation](#evaluation).
 
 | Stage | Path | What it does |
 |---|---|---|
-| Discovery | [`discovery/`](discovery/) | Public Greenhouse / Ashby board APIs: build a board pool, pull recent postings, drop already-seen ones, screen titles with a single-turn LLM worker (high recall), fetch and clean full descriptions |
-| Screening | [`screening/`](screening/) | One isolated LLM call per posting, a structured decision with quoted evidence, validation, batch checkpoints, merge and cross-source dedupe |
-| Resume generation | [`resume/`](resume/) | V1 from a fixed bullet / skills library → external quality review → V2 → PDF → automatic trim until it fits one page → queue |
-| Quality review | [`scoring/`](scoring/) | Provider interface plus a crash-safe state machine for any external scoring service (mock and manual providers included) |
-| Shared | [`common/`](common/), [`config/`](config/) | Model-call interface (CLI and API backends), config and paths, candidate identity, single-turn worker runtime, output guard, pseudonymous telemetry |
-| Evaluation | [`eval/`](eval/), [`docs/`](docs/) | Benchmark scripts, benchmark reports, decision records, the architecture diagram |
+| Discovery | [`discovery/`](discovery/README.md) | Public Greenhouse / Ashby board APIs: build a board pool, pull recent postings, drop already-seen ones, screen titles with a single-turn LLM worker designed to favor recall, fetch and clean full descriptions |
+| Screening | [`screening/`](screening/README.md) | One isolated LLM call per posting, a structured decision with quoted evidence, validation, batch checkpoints, merge and cross-source dedupe |
+| Resume generation | [`resume/`](resume/README.md) | V1 from a fixed bullet / skills library → external quality review → V2 → PDF → automatic trim until it fits one page → queue |
+| Quality review | [`scoring/`](scoring/README.md) | Provider interface plus a crash-safe state machine for any external scoring service (mock and manual providers included) |
+| Shared | [`common/`](common/README.md), [`config/`](config/) | Model-call interface (CLI and API backends), config and paths, candidate identity, single-turn worker runtime, output guard, pseudonymous telemetry |
+| Evaluation | [`eval/`](eval/), [`docs/`](docs/README.md) | Benchmark scripts, benchmark reports, decision records, operational experience, the architecture diagram |
 | Entry point | [`run_pipeline.py`](run_pipeline.py) | One command for the whole pipeline or a slice of it (`--from` / `--until`) |
-| Demo & tooling | [`demo/`](demo/), [`tools/`](tools/) | Offline end-to-end demo, fake model CLI, test runner, public-safety scan |
-| Example data | [`examples/`](examples/) | Fictional candidate (profile, bullet banks, skills) and 8 fictional job postings |
+| Demo & tooling | [`demo/`](demo/README.md), [`tools/`](tools/README.md) | Offline end-to-end demo, fake model CLI, test runner, public-safety scan |
+| Example data | [`examples/`](examples/README.md) | Fictional candidate (profile, bullet banks, skills) and 8 fictional job postings |
+| Experiments | [`experiments/`](experiments/README.md) | Evaluated alternatives with their data and code; not part of the pipeline |
+
+Each linked folder has a README with its inputs and outputs, design choices, run commands, tests
+and limitations.
 
 ## What this repository demonstrates
 
@@ -68,57 +93,15 @@ conversation.
 - **Shipping an LLM workflow that is used every day**: an end-to-end automation from raw postings to a
   reviewed document, with human sign-off at the point of no return, rather than a notebook demo.
 - **Evaluating and constraining LLM output**: schema validation, verbatim evidence checks against the
-  source text as a hallucination control, paired benchmarks with confidence intervals, and a cost model
-  detailed enough to reject a design that passed every quality check
-  ([case study](#case-study-a-design-rejected-on-measurement)).
+  source text as a hallucination control, and paired benchmarks with confidence intervals.
+- **Making architecture trade-offs on evidence**: a two-stage gate and a candidate-fact RAG were
+  implemented, measured against the production design and not adopted, with the reasons and the
+  conditions for revisiting them written down ([experiments](experiments/)).
 - **Collecting data at scale and classifying it with an LLM**: public-API discovery across ~975 company
   boards, deduplicated incrementally, then semantic screening with a rubric the model must justify.
 - **Engineering for cost, failure and untrusted input**: prompt caching, budget caps, checkpoint and
   resume, failure classification with a circuit breaker, one model-call interface over the CLI and the
   Messages API, and layered defences against prompt injection from scraped text.
-
-## Case study: a design rejected on measurement
-
-**Hypothesis.** Most postings fail on a hard rule (years of experience, seniority, language, student
-status). A short "hard-reject gate" call could reject the clear cases cheaply, and only the rest would
-go on to the full screen. The goal was lower cost **without a single extra false reject**.
-
-**Experiment.** 150 stratified postings, with all 35 historical ACCEPTs run first under a stop rule,
-plus 30 postings run end to end through both stages: 170 model calls, $5.68. Every gate reject and
-every borderline case was reviewed by hand.
-
-**Quality: the gate was safe.** All 55 high-confidence rejects were correct (Wilson 93.5%–100%), and
-0 of 35 acceptable jobs were rejected. Postings that a keyword filter would get wrong ("3–5 years …
-preferred", "or equivalent" referring to the degree) were all passed on to the full screen.
-
-**Cost: it went up.**
-
-![Two-stage gate cost breakdown](docs/diagrams/gate_cost.svg)
-
-| Per call | Posting written to cache | Rules read from cache | Output | Total |
-|---|---|---|---|---|
-| Gate | $0.0226 (74%) | $0.0014 | $0.0065 | $0.0305 |
-| Full screen | $0.0225 (48%) | $0.0025 | $0.0220 | $0.0469 |
-
-Per-token prices fitted from the measured calls reproduce every reported cost to within $0.00001, so
-this breakdown is exact, not estimated. It explains the result:
-
-- Every call has to write the whole posting into the prompt cache, and that write dominates the cost.
-  Each posting that passes the gate pays for it twice.
-- A shorter gate prompt only reduces the cache *read*, which was already almost free.
-- The single-stage worker already stops early and cheaply on hard rejects (about $0.0335), so ending
-  a posting at the gate saves almost nothing.
-
-**Break-even.** The gate pays off only if at most ~9% of postings go on to the full screen; even a gate
-that stopped every posting would save only ~9%. Measured: 43% on the production mix (63% in the
-sample). Net effect: +31% per posting ($0.0367 → $0.0481).
-
-**Decision.** Not shipped; production stays single-stage. What would change the decision: a gate
-model cheap enough to cost ≤ ~$0.012 per call (for a 20% saving), or a deterministic pre-filter for
-unambiguous patterns, which would first need its own precision study.
-
-**Takeaway.** For this workload, cost is driven by how many times each posting is sent to a model,
-not by prompt length. Full write-up: [docs/decisions/two_stage_gate.md](docs/decisions/two_stage_gate.md).
 
 ## Example: one screening decision
 
@@ -154,11 +137,13 @@ four engineers"}`, with no responsibility mapping.
 
 - **Python 3.11+**, standard library only, except [PyMuPDF](https://pymupdf.readthedocs.io/) for PDF page
   checks.
-- **Claude** (Opus) behind one call interface ([`common/llm.py`](common/llm.py)) with two backends: the
-  [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) in non-interactive mode (`claude -p`,
-  the default), or the Messages API through the official
-  [`anthropic`](https://github.com/anthropics/anthropic-sdk-python) SDK (`--backend api`, optional
-  extra). Both are single-turn: no tools, the rules in the system prompt, JSON out.
+- **Claude** (Opus) through the [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) in
+  non-interactive mode (`claude -p`, the default). The title screen and screening can instead use the
+  Messages API through the official [`anthropic`](https://github.com/anthropics/anthropic-sdk-python)
+  SDK (`--backend api`, optional extra) behind one call interface ([`common/llm.py`](common/llm.py));
+  resume workers use the CLI only. Every call is single-turn: no tools, the rules in the system
+  prompt, JSON out.
+- **numpy + scikit-learn** only for the RAG experiment (`pip install ".[rag]"`); the pipeline does not use them.
 - **Headless Chrome / Chromium** to render resumes from HTML to PDF.
 - **GitHub Actions** for tests, the offline demo and the public-safety scan.
 
@@ -177,7 +162,8 @@ python3 demo/run_demo.py
 ```
 
 Requirements: Python 3.11+. Chrome or Chromium is needed for PDF rendering; set `CHROME_BIN` if it is
-not found automatically (without it the demo skips the PDF step).
+not found automatically (without it the demo stops before Resume V2 and skips the PDF step).
+What the demo does and does not show: [demo/README.md](demo/README.md).
 
 The demo prints each stage's progress, the decision for each posting and the path of each generated
 resume. Artefacts go to `workspace/demo/` (git-ignored). The end of the output:
@@ -288,14 +274,16 @@ system prompt and input in, text plus normalized usage out, and exactly three fa
 *fatal* (stop the run). The CLI backend and the Messages API backend map their own errors onto those
 classes. The title screen uses it for every call, and screening uses it whenever `--backend api` is
 set. In screening, the API path reuses the same prompt hashing, single-turn and cache-context
-guardrails, budget and validation as the CLI path, so a backend comparison measures the model, not
-the harness ([`eval/compare_models.py`](eval/compare_models.py)). Two deliberate choices: the SDK's own
+guardrails, budget and validation as the CLI path, which reduces harness differences in a backend
+comparison ([`eval/compare_models.py`](eval/compare_models.py)); it does not guarantee that only the
+model differs. Two deliberate choices: the SDK's own
 retries are off, so the pipeline's retry policy is the only one; and server-side refusal fallbacks are
 opt-in, because a run must use a single model, so a declined posting fails on its own instead of being
 answered by another model.
 
-**9. Designs are costed before they ship.** A two-stage gate that passed every quality check was
-rejected because it raised cost by 31%. See the [case study](#case-study-a-design-rejected-on-measurement).
+**9. Designs are costed before they ship.** A two-stage gate that passed its quality checks was
+not adopted because it raised cost by about 31%, and a retrieval-based resume context was not
+adopted because prompt caching made full text cheaper. See [experiments](experiments/).
 
 ## Evaluation
 
@@ -305,16 +293,18 @@ rejected because it raised cost by 31%. See the [case study](#case-study-a-desig
 | Screening: decision quality | 100 stratified postings | 96/100 agree with prior decisions; 1 confirmed false reject among 25 prior ACCEPTs | [screening_single_turn.md](docs/benchmarks/screening_single_turn.md#quality) |
 | Screening: format stability | 121 requests | 0 first-attempt schema / evidence failures | [screening_single_turn.md](docs/benchmarks/screening_single_turn.md#setup-and-guardrails) |
 | Discovery: title-screen worker vs. earlier agent-session decisions | 308 historical titles | 90.6% agree; 79/85 earlier accepts kept; more permissive overall (102 vs 85 accepted) | [title_screen_worker.md](docs/benchmarks/title_screen_worker.md) |
-| Screening: two-stage gate (rejected) | 150 postings + 30 end to end | 55/55 gate rejects correct, 0/35 false rejects; cost +31–38% | [two_stage_gate.md](docs/decisions/two_stage_gate.md) |
+| Screening: two-stage gate (not adopted) | 150 postings + 30 end to end | 0/35 historical ACCEPTs rejected; 55/55 gate rejects judged correct (Claude review); cost +31–38% (estimated) | [two_stage_gate](experiments/two_stage_gate/README.md) |
 | Resume: single-turn vs. earlier tool-using worker | 8 jobs + 3 prompt-injection cases | Cost per job $1.17 → $0.41; 8/8 one page; 0 unsupported numbers; injected instructions not followed | [resume_single_turn.md](docs/benchmarks/resume_single_turn.md) |
+| Resume: candidate-fact RAG vs. full fact library (not adopted) | 6 dev jobs, 30 generations | Context −64–68%, latency −7 to −8 s; +$0.076 per generation once the full prompt is cached; in 2/6 jobs the retrieved context lacked the project both other arms used | [candidate_fact_rag](experiments/candidate_fact_rag/README.md) |
 
 Caveats: samples are small, so these are go / no-go checks, not precise effect estimates. "Agreement"
 compares against the pipeline's own earlier decisions, not against an independent human label.
 
 ## Testing & CI
 
-- 184 offline tests across the model-call layer, discovery, screening, quality review and resume generation, standard
-  library `unittest` only: `python3 tools/run_tests.py`.
+- 185 offline tests across the model-call layer, discovery, screening, quality review and resume generation, standard
+  library `unittest` only: `python3 tools/run_tests.py`. The same runner includes the 30 tests of the RAG
+  experiment, which skip their numpy-dependent part unless the optional `rag` extra is installed.
 - [`tools/fake_claude.py`](tools/fake_claude.py) stands in for the model CLI, so guardrails, retries and
   failure paths are tested without network or spend. One test runs the real hand-off end to end: a
   stage 01 prepare artifact → the title-screen worker → stage 01 finalize. The API backend runs
@@ -323,7 +313,8 @@ compares against the pipeline's own earlier decisions, not against an independen
 - CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs the tests on Python 3.11–3.13, runs the
   offline demo end to end through `run_pipeline.py` and uploads the generated PDFs, and runs a public-safety scan
   ([`tools/check_public_safety.py`](tools/check_public_safety.py)) for secrets, home paths, personal
-  contact details and private file types.
+  contact details and private file types. A separate job installs the experiment's optional dependencies,
+  runs its tests and offline demo, and re-derives both experiments' published numbers from their data.
 
 ## Privacy & scope
 
@@ -354,7 +345,9 @@ compares against the pipeline's own earlier decisions, not against an independen
 - One rubric rule is under-specified: whether a hard 1–2 year minimum counts as a required-experience
   reject (the rubric's examples start at 3+ years). Borderline postings of this kind can flip between
   runs. The benchmark found it; it has not been resolved yet.
-- Not yet built: embedding-based retrieval / deduplication, and a containerised deployment.
+- Not built: neural-embedding retrieval or embedding-based deduplication, and a containerised deployment. A
+  lexical (BM25 + TF-IDF/LSA) retrieval of resume facts was built and evaluated, and not adopted
+  ([experiments](experiments/candidate_fact_rag/README.md)).
 
 ## License
 

@@ -1,0 +1,36 @@
+{
+  "_doc": "Inputs to the cost model that are NOT measured in this experiment's calls. They come from earlier measurements and are recorded here so analyze_gate.py can reproduce every derived number. Treat the per-category values as indicative: n = 1-6 calls each.",
+  "single_stage_baseline": {
+    "_source": "Paired single-turn screening benchmark (docs/benchmarks/screening_single_turn.md), 20 warm production-worker calls. Per-call data of that benchmark is not republished here.",
+    "cost_per_posting_usd": 0.0436,
+    "input_side_tokens_per_posting": 15088,
+    "cold_call_cost_usd": 0.1392,
+    "cost_by_stratum_usd": {
+      "ACCEPT": 0.056,
+      "REJECT_NO_HR": 0.054,
+      "REQUIRED_EXPERIENCE": 0.031,
+      "SENIORITY": 0.039,
+      "SPECIALIZED_EXPERIENCE": 0.035,
+      "LANGUAGE": 0.034,
+      "STUDENT_ELIGIBILITY": 0.038,
+      "MANDATORY_QUALIFICATION": 0.029
+    },
+    "_cost_by_stratum_note": "Strata without a value (UNABLE) fall back to cost_per_posting_usd, as in the original analysis."
+  },
+  "candidate_pool_by_stratum": {
+    "_source": "Deduplicated pool the 150 postings were drawn from: 650 postings screened on two production days. The production mix used for the weighted estimate.",
+    "REQUIRED_EXPERIENCE": 314,
+    "SENIORITY": 106,
+    "REJECT_NO_HR": 60,
+    "SPECIALIZED_EXPERIENCE": 54,
+    "LANGUAGE": 41,
+    "ACCEPT": 35,
+    "STUDENT_ELIGIBILITY": 22,
+    "UNABLE": 10,
+    "MANDATORY_QUALIFICATION": 8
+  },
+  "sampling": {
+    "seed": 20261008,
+    "_quota_note": "All 35 historical ACCEPTs, plus fixed quotas per hard-reject type; see samples.csv for the drawn strata."
+  }
+}

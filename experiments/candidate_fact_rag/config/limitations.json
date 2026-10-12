@@ -1,0 +1,40 @@
+{
+  "_doc": "Implementation status and limitations of the fictional candidate's entities. Hand-maintained, part of the corpus hash. forbidden_patterns are regexes that contradict the limitation; verify.py flags a claim about that entity that matches one.",
+  "default_work_experience": {
+    "implementation_status": "employer_internship_work",
+    "limitations": []
+  },
+  "default_course_project": {
+    "implementation_status": "completed_course_project",
+    "limitations": [
+      {
+        "code": "COURSE_PROJECT",
+        "text": "Course project, not employer work.",
+        "severity": "MAJOR",
+        "forbidden_patterns": [
+          "\\b(for|at) (a|the|our) (client|employer|company)\\b",
+          "\\bin production\\b"
+        ]
+      }
+    ]
+  },
+  "default_project": {
+    "implementation_status": "completed_project_context_unspecified",
+    "limitations": []
+  },
+  "entities": {
+    "PRJ04": {
+      "implementation_status": "framework_design_only",
+      "limitations": [
+        {
+          "code": "FRAMEWORK_ONLY",
+          "text": "Formulation and data requirements only; never implemented, run or deployed, so it has no results.",
+          "severity": "SEVERE",
+          "forbidden_patterns": [
+            "\\b(deployed|implemented|executed|launched|rolled out|in production|saved|reduced|cut|optimi[sz]ed (the )?network)\\b"
+          ]
+        }
+      ]
+    }
+  }
+}

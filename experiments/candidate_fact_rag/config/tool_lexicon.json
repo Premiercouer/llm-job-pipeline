@@ -1,0 +1,93 @@
+{
+  "_doc": "Tool names verify.py looks for in claims. It deliberately includes common tools the fictional candidate does NOT have, so an invented tool is caught. aliases: claim term -> corpus spellings counted as the same tool.",
+  "tools": [
+    "Python",
+    "R",
+    "SQL",
+    "pandas",
+    "NumPy",
+    "scikit-learn",
+    "statsmodels",
+    "XGBoost",
+    "PySpark",
+    "Spark",
+    "Spark SQL",
+    "dplyr",
+    "ggplot2",
+    "Power BI",
+    "Tableau",
+    "Looker",
+    "Excel",
+    "BigQuery",
+    "Dataproc",
+    "GCP",
+    "Google Cloud Platform",
+    "AWS",
+    "Amazon S3",
+    "S3",
+    "AWS Glue",
+    "Glue",
+    "Athena",
+    "SageMaker",
+    "PostgreSQL",
+    "REST API",
+    "regex",
+    "SARIMA",
+    "Snowflake",
+    "Databricks",
+    "Airflow",
+    "dbt",
+    "Kafka",
+    "Scala",
+    "Java",
+    "Go",
+    "Kubernetes",
+    "Docker",
+    "Azure",
+    "Redshift",
+    "MySQL",
+    "MongoDB",
+    "Hadoop",
+    "SAS",
+    "SPSS",
+    "MATLAB",
+    "TensorFlow",
+    "PyTorch",
+    "Qlik",
+    "Alteryx",
+    "Terraform",
+    "Spark Streaming",
+    "LangChain"
+  ],
+  "aliases": {
+    "Amazon S3": [
+      "S3"
+    ],
+    "AWS Glue": [
+      "Glue"
+    ],
+    "Athena": [
+      "Amazon Athena"
+    ],
+    "SageMaker": [
+      "Amazon SageMaker"
+    ],
+    "GCP": [
+      "Google Cloud Platform",
+      "GCP Dataproc"
+    ],
+    "Google Cloud Platform": [
+      "GCP"
+    ],
+    "Dataproc": [
+      "GCP Dataproc"
+    ],
+    "Spark": [
+      "PySpark",
+      "Spark SQL"
+    ],
+    "REST API": [
+      "REST API Integration"
+    ]
+  }
+}
