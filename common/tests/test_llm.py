@@ -146,6 +146,11 @@ class FactoryTests(unittest.TestCase):
     def test_list_price_unknown_model(self):
         self.assertIsNone(llm.list_price_cost("unknown", llm.Usage(output_tokens=1)))
 
+    def test_list_price_sonnet_cache_read(self):
+        u = llm.Usage(input_tokens=1_000_000, cache_creation_input_tokens=1_000_000,
+                      cache_read_input_tokens=1_000_000, output_tokens=1_000_000)
+        self.assertAlmostEqual(llm.list_price_cost("claude-sonnet-5-5", u), 2.00 + 4.00 + 0.10 + 10.00)
+
 
 class CliBackendTests(unittest.TestCase):
     def setUp(self):

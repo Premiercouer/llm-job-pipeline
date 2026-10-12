@@ -223,10 +223,11 @@ class ClaudeCliBackend:
 
 
 # ----------------------------------------------------------------------- Anthropic API backend
-# USD per million tokens: (input, output, cache read). A 1h cache write costs 2x input.
+# USD per million tokens: (input, output, cache read), from the Anthropic pricing page as of
+# 2026-10-11. A 1h cache write costs 2x input. Haiku 5.5: prompts up to 100K tokens only.
 PRICES = {
     "claude-opus-5-5": (4.00, 20.00, 0.20),
-    "claude-sonnet-5-5": (2.00, 10.00, 0.20),
+    "claude-sonnet-5-5": (2.00, 10.00, 0.10),
     "claude-haiku-5-5": (0.10, 0.50, 0.01),
     "claude-fable-5-1": (10.00, 50.00, 0.25),
 }
